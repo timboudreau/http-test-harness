@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Mastfrog Technologies.
+ * Copyright 2022 Tim Boudreau.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,16 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 open module com.mastfrog.http.harness {
-    
+    requires java.net.http;
+    requires com.fasterxml.jackson.annotation;
+    requires com.fasterxml.jackson.databind;
+
+    // These are pending modularization and will change when that happens:
     requires util.misc;
     requires util.strings;
     requires util.preconditions;
     requires concurrent;
     requires predicates;
-    requires java.net.http;
-    requires com.fasterxml.jackson.annotation;
-    requires com.fasterxml.jackson.databind;
-//    requires java.logging;
 }

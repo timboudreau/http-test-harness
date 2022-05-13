@@ -102,3 +102,8 @@ harness = HttpTestHarness.builder()
         // a permissive security policy for the self-signed cert to work).
         .convertingToUrisWith(pathAndQuery -> URI.create("http://localhost:" + app.port() + "/" + pathAndQuery));
 ```
+
+License
+=======
+
+Licensed under [the MIT license](https://opensource.org/licenses/MIT).
