@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.mastfrog</groupId>
+        <artifactId>http-test-harness-parent</artifactId>
+        <version>1.0-dev</version>
+    </parent>
+    <properties>
+        <exec.mainClass>com.mastfrog.http.testapp.TestApplication</exec.mainClass>
+    </properties>
+    <artifactId>http-test-harness-tests</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>acteur</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>acteur-annotation-processors</artifactId>
+            <!-- needed for compile-time only - the annotations are not retained
+            in the class files -->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!-- Contains PortFinder, used to look up a random server port that 
+            is not in use -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>util-net</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Needed for the test server to generate a self-signed certificate
+            on JDK 17 and up -->
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mastfrog</groupId>
+            <artifactId>http-test-harness</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

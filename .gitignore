@@ -1,0 +1,17 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.orig
+*.iml
+.idea/*
+target/*
+/jdk8-stubs/target/
+/nbproject/
+.idea/
+nb-configuration.xml
+nbactions.xml
+target/
+nbproject/
