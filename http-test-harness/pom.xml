@@ -65,7 +65,8 @@ THE SOFTWARE. -->
                     <quiet>true</quiet>
                     <doclint>none</doclint>
                     <additionalOptions>-html5</additionalOptions>
-                    <source>16</source>
+                    <source>11</source>
+                    <release>11</release>
                 </configuration>
             </plugin>
         </plugins>

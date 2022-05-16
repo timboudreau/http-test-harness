@@ -24,6 +24,7 @@
 package com.mastfrog.http.harness;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import static com.mastfrog.util.preconditions.Checks.notNull;
 import com.mastfrog.util.strings.Escaper;
 import com.mastfrog.util.strings.Strings;
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -34,10 +35,38 @@ import java.util.Objects;
  *
  * @author Tim Boudreau
  */
-public final record AssertionResult(
-        AssertionStatus status,
-        FailureSeverity severity,
-        String message, Object actualValue) {
+public final class AssertionResult {
+
+    private final AssertionStatus status;
+    private final FailureSeverity severity;
+    private final Object actualValue;
+    private final String message;
+
+    public AssertionResult(
+            AssertionStatus status,
+            FailureSeverity severity,
+            String message, Object actualValue) {
+        this.status = notNull("status", status);
+        this.severity = notNull("severity", severity);
+        this.message = notNull("message", message);
+        this.actualValue = actualValue;
+    }
+
+    public String message() {
+        return message;
+    }
+
+    public AssertionStatus status() {
+        return status;
+    }
+
+    public FailureSeverity severity() {
+        return severity;
+    }
+
+    public final Object actualValue() {
+        return actualValue;
+    }
 
     @JsonIgnore
     public boolean isOk() {
@@ -63,5 +92,29 @@ public final record AssertionResult(
                 .append(type)
                 .append(')');
         return sb.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.status);
+        hash = 97 * hash + Objects.hashCode(this.severity);
+        hash = 97 * hash + Objects.hashCode(this.actualValue);
+        hash = 97 * hash + Objects.hashCode(this.message);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj == null || obj.getClass() != AssertionResult.class) {
+            return false;
+        }
+        final AssertionResult other = (AssertionResult) obj;
+
+        return status == other.status && severity == other.severity
+                && message.equals(other.message)
+                && Objects.equals(actualValue, other.actualValue);
     }
 }

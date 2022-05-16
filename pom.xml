@@ -44,8 +44,8 @@ THE SOFTWARE. -->
     <properties>
         <bouncycastle.version>1.70</bouncycastle.version>
         <mastfrog.concurrent.version>${mastfrog.version}</mastfrog.concurrent.version>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <dependencyManagement>
@@ -107,7 +107,7 @@ THE SOFTWARE. -->
                         <quiet>true</quiet>
                         <doclint>none</doclint>
                         <additionalOptions>-html5</additionalOptions>
-                        <source>16</source>
+                        <source>11</source>
                     </configuration>
                 </plugin>
             </plugins>
@@ -127,7 +127,7 @@ THE SOFTWARE. -->
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>[16,)</version>
+                                    <version>[11,)</version>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>

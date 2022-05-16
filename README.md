@@ -23,7 +23,7 @@ testing API.
   * Block requests until a locally started server indicates it is ready for requests
   * Separately test that response-start and response-body does/doesn't exceed a time limit
 
-Requires Java 16 or greater; uses the Java 9 module system with the module name
+Requires Java 11 or greater; uses the Java 9 module system with the module name
 `com.mastfrog.http.harness`.
 
 ### Example
