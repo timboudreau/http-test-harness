@@ -25,6 +25,7 @@ open module com.mastfrog.http.harness {
     requires java.net.http;
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.core; // Needed on JDK 11, for the javadoc task only
 
     // These are pending modularization and will change when that happens:
     requires util.misc;

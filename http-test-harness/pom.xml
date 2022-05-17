@@ -62,9 +62,12 @@ THE SOFTWARE. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
+                    <!-- If the build crashed, and you are looking for why,
+                    make sure you are running at least JDK 11.0.10 - it
+                    will fail with error: module not found on earlier versions. -->
                     <quiet>true</quiet>
                     <doclint>none</doclint>
-                    <additionalOptions>-html5</additionalOptions>
+                    <validateLinks>false</validateLinks>
                     <source>11</source>
                     <release>11</release>
                 </configuration>
