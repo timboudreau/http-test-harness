@@ -181,7 +181,7 @@ public class TestHarnessTest {
     }
 
     @Test
-    public void testRequestHungWithNoHeadersSentTimesOut() {
+    public void testRequestHungWithNoHeadersSentTimesOut() throws Exception {
         // This test makes an HTTP request that will simply be left open forever,
         // to verify that our timeout logic works correctly
         harness.get("hang")
@@ -189,8 +189,9 @@ public class TestHarnessTest {
                 .test(asserts -> {
                     asserts.assertTimesOut();
                 }).printResults();
+//        Thread.sleep(500);
         // Check that the connection really was closed by the timeout
-        assertTrue(LeaveChannelOpenAndNeverRespond.CHANNEL_WAS_CLOSED,
+        assertTrue(LeaveChannelOpenAndNeverRespond.channelWasClosed(),
                 "Channel should have been closed and was not");
     }
 

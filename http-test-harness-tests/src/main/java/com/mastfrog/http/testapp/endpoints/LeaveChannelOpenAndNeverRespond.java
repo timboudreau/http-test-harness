@@ -30,6 +30,8 @@ import static com.mastfrog.acteur.headers.Method.GET;
 import com.mastfrog.acteur.preconditions.Description;
 import com.mastfrog.acteur.preconditions.Methods;
 import com.mastfrog.acteur.preconditions.Path;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 /**
@@ -42,16 +44,33 @@ import javax.inject.Inject;
 @Description("Intentionally defers the responder chain and never responds.")
 public class LeaveChannelOpenAndNeverRespond extends Acteur {
 
-    public static volatile boolean CHANNEL_WAS_CLOSED;
+    private static volatile boolean CHANNEL_WAS_CLOSED;
+    private static final CountDownLatch latch = new CountDownLatch(1);
 
     @Inject
     LeaveChannelOpenAndNeverRespond(HttpEvent evt) {
         evt.channel().closeFuture().addListener(f -> {
             CHANNEL_WAS_CLOSED = true;
+            latch.countDown();
         });
         // This gives us a CompletableFuture that would continue the
         // response chain, which we intentionally never complete, in order
         // to test the logic that ensures timeouts work in the test harness
         defer();
+    }
+
+    public static synchronized boolean channelWasClosed() {
+        if (!CHANNEL_WAS_CLOSED) {
+            // On JDK 11, the HTTP client may not have closed the connection at
+            // the time the test gets the response, so ensure that the test
+            // that indeed it was closed is blocked until it has had a chance
+            // to in the background
+            try {
+                latch.await(20, TimeUnit.SECONDS);
+            } catch (InterruptedException ex) {
+                // don't care
+            }
+        }
+        return CHANNEL_WAS_CLOSED;
     }
 }
