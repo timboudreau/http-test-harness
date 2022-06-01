@@ -40,7 +40,7 @@ abstract class AbstractHttpTestHarness implements HttpTestHarness<URI> {
 
     final Codec codec;
 
-    public AbstractHttpTestHarness(Codec codec) {
+    AbstractHttpTestHarness(Codec codec) {
         this.codec = codec;
     }
 

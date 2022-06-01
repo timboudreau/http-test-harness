@@ -24,6 +24,10 @@
 package com.mastfrog.http.harness;
 
 import static com.mastfrog.http.harness.AssertionStatus.DID_NOT_RUN;
+import com.mastfrog.http.harness.difference.Difference;
+import com.mastfrog.http.harness.difference.Differencing;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -36,7 +40,7 @@ abstract class Assertion<T, R> {
 
     protected final String messageHead;
     private final FailureSeverity severity;
-    private final Predicate<? super R> test;
+    protected final Predicate<? super R> test;
 
     Assertion(String messageHead, FailureSeverity severity, Predicate<? super R> test) {
         this.messageHead = messageHead;
@@ -45,11 +49,13 @@ abstract class Assertion<T, R> {
     }
 
     AssertionResult errorResult(Throwable thrown) {
-        return new AssertionResult(AssertionStatus.INTERNAL_ERROR, severity, toString(), thrown);
+        return new AssertionResult(AssertionStatus.INTERNAL_ERROR,
+                severity, toString(), thrown, null);
     }
 
     AssertionResult didNotRunResult() {
-        return new AssertionResult(DID_NOT_RUN, severity, toString(), null);
+        return new AssertionResult(DID_NOT_RUN, severity, toString(),
+                null, null);
     }
 
     abstract R convert(T obj);
@@ -57,7 +63,12 @@ abstract class Assertion<T, R> {
     AssertionResult test(T obj) {
         R value = convert(obj);
         boolean success = test.test(value);
-        return new AssertionResult(AssertionStatus.of(success), severity, toString(), value);
+        Map<String, Set<Difference<?>>> diffs = null;
+        if (test instanceof Differencing) {
+            diffs = ((Differencing) test).differences();
+        }
+        return new AssertionResult(AssertionStatus.of(success),
+                severity, toString(), value, diffs);
     }
 
     @Override

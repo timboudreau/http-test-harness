@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Tim Boudreau.
+ * Copyright 2022 Mastfrog Technologies.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,17 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-open module com.mastfrog.http.harness {
-    requires java.net.http;
-//    requires com.fasterxml.jackson.annotation;
-    requires transitive com.fasterxml.jackson.databind;
-//    requires com.fasterxml.jackson.core; // Needed on JDK 11, for the javadoc task only
+package com.mastfrog.http.harness.difference;
 
-    // These are pending modularization and will change when that happens:
-    requires util.misc;
-    requires util.strings;
-    requires util.preconditions;
-    requires concurrent;
-    requires function;
-    requires predicates;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * An assertion that is capable of differencing two objects to narrow down what
+ * has changed in an inequality test.
+ *
+ * @author Tim Boudreau
+ */
+public interface Differencing {
+
+    Map<String, Set<Difference<?>>> differences();
+
+    public static <T> Map<String, Set<Difference<?>>> difference(T a, T b) {
+        DifferencesBuilder<Map<String, Set<Difference<?>>>> bldr = DifferencesBuilder.root();
+        new ReflectionDifferencer().difference("", a, b, bldr);
+        return bldr.build();
+    }
 }

@@ -23,6 +23,7 @@
  */
 package com.mastfrog.http.harness;
 
+import com.mastfrog.http.harness.difference.Difference;
 import com.mastfrog.util.codec.Codec;
 import com.mastfrog.util.preconditions.Exceptions;
 import java.io.IOException;
@@ -189,9 +190,31 @@ final class TestResultsImpl implements TestResults<HttpResponse<String>> {
                 .append(" with ")
                 .append(failures.size())
                 .append(" failed assertions:");
+        return assertionListToString(failures, sb);
+    }
+
+    private StringBuilder assertionListToString(List<AssertionResult> failures,
+            StringBuilder sb) {
         for (AssertionResult res : failures) {
             sb.append('\n');
-            sb.append(" * ").append(res);
+            sb.append("  * ").append(res);
+            res.differences().ifPresent(diffs -> {
+                diffs.forEach((property, diffSet) -> {
+                    switch (diffSet.size()) {
+                        case 0:
+                            return;
+                        case 1:
+                            sb.append("    * ").append(property).append(": ")
+                                    .append(diffSet.iterator().next());
+                        default:
+                            sb.append("    * ").append(property)
+                                    .append(" differences:");
+                            for (Difference<?> diff : diffSet) {
+                                sb.append("      * ").append(diff);
+                            }
+                    }
+                });
+            });
         }
         return sb;
     }
@@ -203,6 +226,24 @@ final class TestResultsImpl implements TestResults<HttpResponse<String>> {
                 + " with " + liveResults.size() + " assertion results:");
         for (AssertionResult r : this) {
             logger.accept(HarnessLogLevel.DETAIL, () -> "   * " + r);
+            r.differences().ifPresent(diffs -> {
+                diffs.forEach((property, diffSet) -> {
+                    switch (diffSet.size()) {
+                        case 0:
+                            return;
+                        case 1:
+                            logger.accept(HarnessLogLevel.DEBUG, () -> "     * "
+                                    + property + ": " + diffSet.iterator().next());
+                        default:
+                            logger.accept(HarnessLogLevel.DEBUG, () -> "     * "
+                                    + property + " differences:");
+                            for (Difference<?> diff : diffSet) {
+                                logger.accept(HarnessLogLevel.DEBUG, ()
+                                        -> "     * " + diff);
+                            }
+                    }
+                });
+            });
         }
         return this;
     }
@@ -222,10 +263,7 @@ final class TestResultsImpl implements TestResults<HttpResponse<String>> {
                 .append(" with ")
                 .append(liveResults.size())
                 .append(" assertions:");
-        for (AssertionResult res : liveResults) {
-            sb.append('\n');
-            sb.append(" * ").append(res);
-        }
+        assertionListToString(liveResults, sb);
         return sb.toString();
     }
 }

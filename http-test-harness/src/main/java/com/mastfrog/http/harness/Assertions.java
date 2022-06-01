@@ -26,11 +26,8 @@ package com.mastfrog.http.harness;
 import com.mastfrog.predicates.Predicates;
 import com.mastfrog.predicates.integer.IntPredicates;
 import com.mastfrog.predicates.string.StringPredicates;
-import static com.mastfrog.util.preconditions.Checks.notNull;
-import com.mastfrog.util.strings.Strings;
 import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
@@ -332,20 +329,16 @@ public interface Assertions {
 
     /**
      * Assert that the response body, parsed as JSON, has object equality with
-     * the passed object.
+     * the passed object; the assertion message generation code has field-level
+     * differencing of objects, so this is to be preferred if you need to
+     * directly compare two objects.
      *
      * @param <T> The type to use when deserializing
      * @param type The type to use when deserializing
      * @param object An object of the type
      * @return
      */
-    default <T> Assertions assertDeserializedBodyEquals(Class<T> type, T object) {
-        String asStr = Strings.escapeControlCharactersAndQuotes(Objects.toString(
-                notNull("object", object)));
-        return assertObject("Desserialized (JSON?) object equality.", type,
-                Predicates.namedPredicate("Deserialized response body equals(" + asStr + ")",
-                        object::equals));
-    }
+    <T> Assertions assertDeserializedBodyEquals(Class<T> type, T object);
 
     /**
      * Assert that the response body, parsed as JSON, has object equality with
@@ -358,7 +351,7 @@ public interface Assertions {
     @SuppressWarnings("unchecked")
     default <T> Assertions assertDeserializedBodyEquals(T object) {
         Class<T> type = (Class<T>) object.getClass();
-        return Assertions.this.assertDeserializedBodyEquals(type, object);
+        return assertDeserializedBodyEquals(type, object);
     }
 
     /**

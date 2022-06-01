@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Tim Boudreau.
+ * Copyright 2022 Mastfrog Technologies.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,17 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-open module com.mastfrog.http.harness {
-    requires java.net.http;
-//    requires com.fasterxml.jackson.annotation;
-    requires transitive com.fasterxml.jackson.databind;
-//    requires com.fasterxml.jackson.core; // Needed on JDK 11, for the javadoc task only
+package com.mastfrog.http.harness.difference;
 
-    // These are pending modularization and will change when that happens:
-    requires util.misc;
-    requires util.strings;
-    requires util.preconditions;
-    requires concurrent;
-    requires function;
-    requires predicates;
+/**
+ *
+ * @author Tim Boudreau
+ */
+interface Differencer<T> {
+
+    <P> void difference(String name, T a, T b, DifferencesBuilder<P> bldr);
+
+    default <R> boolean canDifference(R a, R b) {
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    default <R> T cast(R obj) {
+        return (T) obj;
+    }
+
+    default <R, P> boolean differenceIfPossible(String name, R a, R b, DifferencesBuilder<P> bldr) {
+        if (canDifference(a, b)) {
+            difference(name, cast(a), cast(b), bldr);
+            return true;
+        }
+        return false;
+    }
 }

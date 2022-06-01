@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Tim Boudreau.
+ * Copyright 2022 Mastfrog Technologies.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,17 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-open module com.mastfrog.http.harness {
-    requires java.net.http;
-//    requires com.fasterxml.jackson.annotation;
-    requires transitive com.fasterxml.jackson.databind;
-//    requires com.fasterxml.jackson.core; // Needed on JDK 11, for the javadoc task only
+package com.mastfrog.http.harness.difference;
 
-    // These are pending modularization and will change when that happens:
-    requires util.misc;
-    requires util.strings;
-    requires util.preconditions;
-    requires concurrent;
-    requires function;
-    requires predicates;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Map;
+
+/**
+ *
+ * @author Tim Boudreau
+ */
+final class JacksonDifferencer implements Differencer<Object> {
+
+    @Override
+    public <P> void difference(String name, Object a, Object b, DifferencesBuilder<P> bldr) {
+        ReflectionDifferencer refl = new ReflectionDifferencer();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<?, ?> mapa = mapper.readValue(mapper.writeValueAsBytes(a), Map.class);
+            Map<?, ?> mapb = mapper.readValue(mapper.writeValueAsBytes(a), Map.class);
+            refl.difference(name, mapa, mapb, bldr);
+        } catch (IOException ex) {
+            refl.difference(name, a, b, bldr);
+        }
+    }
 }

@@ -34,4 +34,6 @@ open module com.mastfrog.http.harness {
     requires concurrent;
     requires function;
     requires predicates;
+    requires transitive org.junit.jupiter.api;
+    requires transitive org.junit.jupiter.engine;
 }

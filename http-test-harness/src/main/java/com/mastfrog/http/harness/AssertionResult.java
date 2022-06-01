@@ -24,11 +24,15 @@
 package com.mastfrog.http.harness;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mastfrog.http.harness.difference.Difference;
 import static com.mastfrog.util.preconditions.Checks.notNull;
 import com.mastfrog.util.strings.Escaper;
 import com.mastfrog.util.strings.Strings;
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * The result of running one assertion.
@@ -41,15 +45,22 @@ public final class AssertionResult {
     private final FailureSeverity severity;
     private final Object actualValue;
     private final String message;
+    private final Map<String, Set<Difference<?>>> differences;
 
     public AssertionResult(
             AssertionStatus status,
             FailureSeverity severity,
-            String message, Object actualValue) {
+            String message, Object actualValue,
+            Map<String, Set<Difference<?>>> differences) {
         this.status = notNull("status", status);
         this.severity = notNull("severity", severity);
         this.message = notNull("message", message);
         this.actualValue = actualValue;
+        this.differences = differences;
+    }
+
+    public Optional<Map<String, Set<Difference<?>>>> differences() {
+        return Optional.ofNullable(differences);
     }
 
     public String message() {
@@ -64,7 +75,7 @@ public final class AssertionResult {
         return severity;
     }
 
-    public final Object actualValue() {
+    public Object actualValue() {
         return actualValue;
     }
 
@@ -91,6 +102,18 @@ public final class AssertionResult {
                 : "' of type ")
                 .append(type)
                 .append(')');
+        differences().ifPresent(diff -> {
+            diff.forEach((item, diffs) -> {
+                if (diffs.size() == 1) {
+                    sb.append("\n   * ").append(item).append(' ').append(diffs.iterator().next());
+                } else {
+                    sb.append("\n   * ").append(item).append(" differences:");
+                    for (Difference<?> d : diffs) {
+                        sb.append("\n     * ").append(d);
+                    }
+                }
+            });
+        });
         return sb.toString();
     }
 

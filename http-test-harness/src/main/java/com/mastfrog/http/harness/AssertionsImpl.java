@@ -24,6 +24,8 @@
 package com.mastfrog.http.harness;
 
 import com.mastfrog.concurrent.IncrementableLatch;
+import com.mastfrog.http.harness.difference.Difference;
+import com.mastfrog.http.harness.difference.Differencing;
 import com.mastfrog.predicates.Predicates;
 import com.mastfrog.util.codec.Codec;
 import static com.mastfrog.util.preconditions.Checks.notNull;
@@ -41,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -235,6 +238,20 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
     }
 
     @Override
+    public <T> Assertions assertDeserializedBodyEquals(Class<T> type, T object) {
+        return addBodyAssertion(new ObjectEqualityAssertion<>(
+                new JsonConverter<>(type, mapper), severity(), object));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> Assertions assertDeserializedBodyEquals(T object) {
+        notNull("object", object);
+        return addBodyAssertion(new ObjectEqualityAssertion<>(
+                new JsonConverter<>((Class<T>) object.getClass(), mapper), severity(), object));
+    }
+
+    @Override
     public AssertionsImpl assertTimesOut() {
         return addTimeoutAssertion(new TimeoutAssertion(true, severity()));
     }
@@ -412,7 +429,7 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
         private final Class<T> type;
         private final Codec mapper;
 
-        public JsonConverter(Class<T> type, Codec mapper) {
+        JsonConverter(Class<T> type, Codec mapper) {
             this.type = type;
             this.mapper = mapper;
         }
@@ -429,7 +446,7 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
 
     private static final class TimeoutAssertion extends Assertion<Boolean, Boolean> {
 
-        public TimeoutAssertion(boolean expectation, FailureSeverity severity) {
+        TimeoutAssertion(boolean expectation, FailureSeverity severity) {
             super(expectation
                     ? "The request should time out"
                     : "The test should not time out",
@@ -463,7 +480,7 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
 
     private static final class ThrowableAssertion extends Assertion<Throwable, Throwable> {
 
-        public <T extends Throwable> ThrowableAssertion(String messageHead, FailureSeverity severity, Class<T> type) {
+        <T extends Throwable> ThrowableAssertion(String messageHead, FailureSeverity severity, Class<T> type) {
             super(messageHead, severity, new IsInstancePredicate<T, Throwable>(type));
         }
 
@@ -477,7 +494,7 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
 
         private final Class<T> type;
 
-        public IsInstancePredicate(Class<T> type) {
+        IsInstancePredicate(Class<T> type) {
             this.type = notNull("type", type);
         }
 
@@ -516,6 +533,60 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
         @Override
         T convert(ByteArrayOutputStream obj) {
             return converter.apply(obj);
+        }
+    }
+
+    private static final class ObjectEqualityAssertion<T> extends Assertion<ByteArrayOutputStream, T> implements Differencing {
+
+        private final Function<ByteArrayOutputStream, T> converter;
+        private final T mustEqual;
+
+        ObjectEqualityAssertion(Function<ByteArrayOutputStream, T> converter, FailureSeverity severity, T mustEqual) {
+            super("Object equality", severity, new ObjectEquality<T>(mustEqual));
+            this.mustEqual = mustEqual;
+            this.converter = converter;
+        }
+        
+        @Override
+        public String toString() {
+            return "equal to " + mustEqual;
+        }
+
+        @Override
+        T convert(ByteArrayOutputStream obj) {
+            return converter.apply(obj);
+        }
+
+        @Override
+        public Map<String, Set<Difference<?>>> differences() {
+            return ((Differencing) test).differences();
+        }
+
+        static class ObjectEquality<T> implements Predicate<T>, Differencing {
+
+            private final T expected;
+            private volatile T got;
+
+            ObjectEquality(T expected) {
+                this.expected = expected;
+            }
+
+            @Override
+            public boolean test(T t) {
+                boolean result = Objects.equals(expected, t);
+                if (!result) {
+                    got = t;
+                }
+                return result;
+            }
+
+            @Override
+            public Map<String, Set<Difference<?>>> differences() {
+                T g = got;
+                got = null;
+                Map<String, Set<Difference<?>>> result = Differencing.difference(expected, g);
+                return result;
+            }
         }
     }
 
@@ -571,7 +642,7 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
 
         private final T what;
 
-        public EqualityPredicate(T what) {
+        EqualityPredicate(T what) {
             this.what = what;
         }
 
@@ -596,7 +667,7 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
         // And the JDK's IntPredicate doesn't implement this why?
         private final IntPredicate delegate;
 
-        public IntPredicateAdapter(IntPredicate delegate) {
+        IntPredicateAdapter(IntPredicate delegate) {
             this.delegate = delegate;
         }
 
