@@ -73,6 +73,7 @@ final class TestHarness extends AbstractHttpTestHarness {
     private final Supplier<String> testMethodFindingStrategy;
     private final Optional<CountDownLatch> awaitReady;
     private final Optional<Semaphore> concurrentRequestsThrottle;
+    private final Optional<RequestIdProvider> requestIdProvider;
     private final BiConsumer<HarnessLogLevel, Supplier<String>> logger;
 
     TestHarness(HttpClient client, Codec codec, Duration defaultTimeout,
@@ -82,6 +83,7 @@ final class TestHarness extends AbstractHttpTestHarness {
             TestReport report, Duration defaultOverallTimeout,
             Supplier<String> testMethodFindingStrategy,
             CountDownLatch awaitReady, Semaphore concurrentRequestsThrottle,
+            RequestIdProvider requestIdProvider,
             BiConsumer<HarnessLogLevel, Supplier<String>> logger) {
         super(codec == null
                 ? new ObjectMapperCodec()
@@ -113,6 +115,7 @@ final class TestHarness extends AbstractHttpTestHarness {
         this.awaitReady = Optional.ofNullable(awaitReady);
         this.concurrentRequestsThrottle = Optional.ofNullable(concurrentRequestsThrottle);
         this.logger = logger;
+        this.requestIdProvider = Optional.ofNullable(requestIdProvider);
     }
 
     private boolean awaitReady() {
@@ -275,6 +278,9 @@ final class TestHarness extends AbstractHttpTestHarness {
             try {
                 List<AssertionResult> list = new CopyOnWriteArrayList<>();
                 AtomicBoolean aborted = new AtomicBoolean();
+                requestIdProvider.ifPresent(idProvider -> {
+                    bldr.header(idProvider.headerName(), idProvider.newRequestId(bldr.build(), testMethod));
+                });
                 HttpRequest req = bldr.build();
                 String reqInfo = req.method() + " " + req.uri();
                 AssertionsImpl assertions = new AssertionsImpl(

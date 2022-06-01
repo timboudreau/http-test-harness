@@ -43,6 +43,8 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -76,6 +78,7 @@ public final class TestApplication implements Function<String, URI> {
     private volatile ServerControl ctrl;
     private final AtomicBoolean started = new AtomicBoolean();
     private final CountDownLatch startLatch = new CountDownLatch(1);
+    private final List<com.google.inject.Module> additionalModules = new CopyOnWriteArrayList<>();
 
     public TestApplication() {
         this(false);
@@ -83,6 +86,11 @@ public final class TestApplication implements Function<String, URI> {
 
     public TestApplication(boolean https) {
         this.https = https;
+    }
+    
+    public TestApplication withModule(com.google.inject.Module module) {
+        additionalModules.add(module);
+        return this;
     }
 
     /**
@@ -159,6 +167,7 @@ public final class TestApplication implements Function<String, URI> {
                         // Use a silent request logger to reduce noise in test output
                         binder.bind(RequestLogger.class).toInstance(new RL());
                     }
+                    additionalModules.forEach(binder::install);
                 })
                 .add(Settings.builder()
                         // Set up the binding of "port" to our port

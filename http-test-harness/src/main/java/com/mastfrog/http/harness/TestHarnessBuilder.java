@@ -59,8 +59,53 @@ public final class TestHarnessBuilder {
     private CountDownLatch awaitReady;
     private Semaphore concurrentRequestsThrottle;
     private BiConsumer<HarnessLogLevel, Supplier<String>> logger = new StdoutHarnessLog();
+    private RequestIdProvider requestIdProvider;
 
     TestHarnessBuilder() {
+    }
+
+    /**
+     * Set a provider to supply a dynamic request id header name and value -
+     * useful for mapping server logs to client requests.
+     *
+     * @param prov An id provider
+     * @return this
+     */
+    public TestHarnessBuilder withRequestIdProvider(RequestIdProvider prov) {
+        this.requestIdProvider = prov;
+        return this;
+    }
+
+    /**
+     * Set the header name for use with dynamically generated request-id
+     * headers. If the RequestIdProvider has not been set, will set the harness
+     * to use {@link RequestIdProvider#DEFAULT}.
+     *
+     * @param headerName A header name
+     * @return this
+     */
+    public TestHarnessBuilder withRequestIdHeaderName(String headerName) {
+        if (this.requestIdProvider != null) {
+            this.requestIdProvider = this.requestIdProvider.withHeaderName(
+                    notNull("headerName", headerName));
+        } else {
+            this.requestIdProvider = RequestIdProvider.DEFAULT.withHeaderName(
+                    notNull("headerName", headerName));
+        }
+        return this;
+    }
+
+    /**
+     * Use the built-in request id header provider
+     * {@link RequestIdProvider#DEFAULT}, which uses a default header name of
+     * {@link RequestIdProvider#DEFAULT_HEADER_NAME}. If
+     * <code>withRequestIdHeaderName()</code> has already been called, it is
+     * reset.
+     *
+     * @return this
+     */
+    public TestHarnessBuilder withDefaultRequestIdProvider() {
+        return withRequestIdProvider(RequestIdProvider.DEFAULT);
     }
 
     /**
@@ -154,7 +199,7 @@ public final class TestHarnessBuilder {
         return new TestHarness(client, mapper, defaultTimeout, defaultHeaders,
                 version, timeoutCheckInterval, resultsConsumer, report,
                 defaultOverallTimeout, testMethodFindingStrategy, awaitReady,
-                concurrentRequestsThrottle, logger);
+                concurrentRequestsThrottle, requestIdProvider, logger);
     }
 
     /**
@@ -164,8 +209,9 @@ public final class TestHarnessBuilder {
      * <p>
      * Note that if you are instantiating your test harness in a JUnit <code>&#064;Before<code> or
      * JUnit 5 <code>&#064;BeforeEach</code> setup method, you need to use
-     * {@link com.mastfrog.http.harness.TestHarnessBuilder#throttlingRequestsWith(Semaphore)} instead, or
-     * you will get one semaphore per test method and no throttling will happen.
+     * {@link com.mastfrog.http.harness.TestHarnessBuilder#throttlingRequestsWith(Semaphore)}
+     * instead, or you will get one semaphore per test method and no throttling
+     * will happen.
      * </p>
      *
      * @param maxConcurrentRequests The greatest number of concurrent requests

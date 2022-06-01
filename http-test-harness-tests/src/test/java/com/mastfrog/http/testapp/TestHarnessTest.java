@@ -5,19 +5,31 @@ import com.mastfrog.http.harness.HttpTestHarness;
 import com.mastfrog.http.harness.TestReport;
 import com.mastfrog.http.harness.TestResults;
 import static com.google.common.net.MediaType.JSON_UTF_8;
+import com.google.inject.Binder;
+import com.mastfrog.acteur.Event;
+import com.mastfrog.acteur.HttpEvent;
+import com.mastfrog.acteur.debug.Probe;
+import com.mastfrog.acteur.util.RequestID;
 import com.mastfrog.http.harness.HarnessLogLevel;
+import com.mastfrog.http.harness.RequestIdProvider;
 import com.mastfrog.predicates.Predicates;
 import com.mastfrog.predicates.string.StringPredicates;
 import com.mastfrog.http.testapp.endpoints.LeaveChannelOpenAndNeverRespond;
 import com.mastfrog.http.testapp.endpoints.SomeObject;
+import com.mastfrog.util.collections.CollectionUtils;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.net.http.HttpClient.Version;
 import static java.net.http.HttpClient.Version.HTTP_1_1;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import org.junit.jupiter.api.AfterAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,21 +49,79 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 public class TestHarnessTest {
 
     private static TestApplication app;
+    private static RID requestIdsProbe;
     private static TestReport report;
     private static HttpTestHarness<String> harness;
     private static final Semaphore THROTTLE = new Semaphore(30);
     private static List<String> messages = new ArrayList<>();
+
+    // Allows us to test request-id behavior
+    static class RID implements RequestIdProvider, Probe, com.google.inject.Module {
+
+        final Set<String> generatedRequestIds = ConcurrentHashMap.newKeySet();
+        final Set<String> encounteredRequestIds = ConcurrentHashMap.newKeySet();
+
+        @Override
+        public String newRequestId(HttpRequest req, String testName) {
+            String result = RequestIdProvider.DEFAULT.newRequestId(req, testName);
+            System.out.println(req.method() + " " + req.uri() + ": " + result);
+            generatedRequestIds.add(result);
+            return result;
+        }
+
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(Probe.class).toInstance(this);
+        }
+
+        @Override
+        public void onBeforeProcessRequest(RequestID id, Event<?> req) {
+            if (req instanceof HttpEvent) {
+                HttpEvent evt = (HttpEvent) req;
+                String requestId = evt.header(DEFAULT_HEADER_NAME);
+                if (requestId != null) {
+                    encounteredRequestIds.add(requestId);
+                }
+            }
+        }
+
+        public void assertRequestIdsMatch() {
+            Set<String> generated = new TreeSet<>(generatedRequestIds);
+            // Filter out the id for test that intentionally never gets as far as
+            // making a request
+            for (Iterator<String> iter = generated.iterator(); iter.hasNext();) {
+                String s = iter.next();
+                if (s.contains("testThrowInAssertsReleasesPermit")) {
+                    iter.remove();
+                }
+            }
+            generatedRequestIds.clear();
+            Set<String> encountered = new TreeSet<>(encounteredRequestIds);
+            encounteredRequestIds.clear();
+            if (!generated.equals(encountered)) {
+                Set<String> dis = CollectionUtils.disjunction(encountered, generated);
+                fail("Not all generated request ids were encountered by the server: " + dis
+                        + "\n  Generated: " + generated
+                        + "\nEncountered: " + encountered);
+            }
+        }
+
+    }
 
     @BeforeAll
     public static void setUpClass() throws IOException {
         // To enable verbose server-side logging:
         // System.setProperty("acteur.debug", "true");
         report = new TestReport();
+        requestIdsProbe = new RID();
         // Start the server on a random available port
-        app = new TestApplication().start();
+        app = new TestApplication()
+                .withModule(requestIdsProbe)
+                .start();
         harness = HttpTestHarness.builder()
                 .withHttpVersion(HTTP_1_1)
                 .withTestReport(report)
+                .withRequestIdProvider(requestIdsProbe)
                 .awaitingReadinessOn(app.startupLatch())
                 .throttlingRequestsWith(THROTTLE)
                 .replaceLogger((lev, msg) -> {
@@ -98,6 +168,7 @@ public class TestHarnessTest {
 //                }
             }
         }
+        requestIdsProbe.assertRequestIdsMatch();
     }
 
     @BeforeEach
@@ -229,7 +300,8 @@ public class TestHarnessTest {
                     asserts.assertResponseCodeGreaterThan(199)
                             .assertResponseCodeLessThan(400)
                             .assertVersion(HTTP_1_1)
-                            .assertDeserializedBodyEquals(new SomeObject(24, "skiddoo-xx"));
+                            .assertDeserializedBodyEquals(
+                                    new SomeObject(24, "skiddoo-xx"));
                 }).printResults();
     }
 
