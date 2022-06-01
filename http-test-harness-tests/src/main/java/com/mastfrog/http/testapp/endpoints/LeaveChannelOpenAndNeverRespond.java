@@ -32,6 +32,8 @@ import com.mastfrog.acteur.preconditions.Methods;
 import com.mastfrog.acteur.preconditions.Path;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 
 /**
@@ -69,6 +71,13 @@ public class LeaveChannelOpenAndNeverRespond extends Acteur {
                 latch.await(20, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 // don't care
+            }
+        }
+        for (int i = 0; i < 10 && !CHANNEL_WAS_CLOSED; i++) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+
             }
         }
         return CHANNEL_WAS_CLOSED;

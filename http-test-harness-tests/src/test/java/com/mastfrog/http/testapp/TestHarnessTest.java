@@ -189,7 +189,7 @@ public class TestHarnessTest {
                 .test(asserts -> {
                     asserts.assertTimesOut();
                 }).printResults();
-//        Thread.sleep(500);
+
         // Check that the connection really was closed by the timeout
         assertTrue(LeaveChannelOpenAndNeverRespond.channelWasClosed(),
                 "Channel should have been closed and was not");
