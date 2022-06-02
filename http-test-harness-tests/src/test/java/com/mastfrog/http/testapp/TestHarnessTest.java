@@ -22,7 +22,10 @@ import java.net.ProtocolException;
 import java.net.http.HttpClient.Version;
 import static java.net.http.HttpClient.Version.HTTP_1_1;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublisher;
+import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
+import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,7 +33,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Flow;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,7 +70,7 @@ public class TestHarnessTest {
         @Override
         public String newRequestId(HttpRequest req, String testName) {
             String result = RequestIdProvider.DEFAULT.newRequestId(req, testName);
-            System.out.println(req.method() + " " + req.uri() + ": " + result);
+//            System.out.println(req.method() + " " + req.uri() + ": " + result);
             generatedRequestIds.add(result);
             return result;
         }
@@ -264,6 +270,34 @@ public class TestHarnessTest {
         // Check that the connection really was closed by the timeout
         assertTrue(LeaveChannelOpenAndNeverRespond.channelWasClosed(),
                 "Channel should have been closed and was not");
+    }
+
+    static class DelayedBodyPublisher implements BodyPublisher {
+
+        private final BodyPublisher pub = BodyPublishers.ofByteArray(new byte[1024]);
+
+        @Override
+        public long contentLength() {
+            return pub.contentLength();
+        }
+
+        @Override
+        public void subscribe(Flow.Subscriber<? super ByteBuffer> subscriber) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(TestHarnessTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            pub.subscribe(subscriber);
+        }
+
+    }
+
+    @Test
+    public void testEarlyResponse() throws Exception {
+        harness.put("early", new DelayedBodyPublisher()).test(asserts -> {
+            asserts.assertResponseCode(409);
+        }).printResults();
     }
 
     @Test
