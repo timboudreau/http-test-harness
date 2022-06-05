@@ -516,7 +516,7 @@ public final class TestReport {
         @Override
         public String toString() {
             StringBuilder result = new StringBuilder("<!doctype html>\n<html>\n");
-            if (!head.isEmpty()) {
+            if (head.length() > 0) {
                 result.append("  <head>\n");
                 result.append(head);
                 result.append("  </head>\n");
