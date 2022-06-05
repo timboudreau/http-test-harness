@@ -280,4 +280,6 @@ public interface HttpTestHarness<U> {
     public static TestHarnessBuilder builder() {
         return new TestHarnessBuilder();
     }
+    
+    public void awaitQuiet(Duration dur, boolean killOnTimeout);
 }

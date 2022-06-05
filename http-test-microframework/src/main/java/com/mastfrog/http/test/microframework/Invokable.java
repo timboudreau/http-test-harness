@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Tim Boudreau.
+ * Copyright 2022 Mastfrog Technologies.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,31 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.mastfrog.http.harness;
+package com.mastfrog.http.test.microframework;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The severity with which an assertion failure should be treated; the default
- * is FATAL. To use a different severity, use
- * <code>Assertions.withSeverity(Consumer&lt;Assertions&gt;)</code> to add
- * assertions with altered severity, for things which may fail, where that
- * should be reported but is not necessarily catastrophic (also useful to test
- * <i>that</i> things fail in an expected way).
+ * A thing that can be invoked as part of a test suite or whatever. If it
+ * annotates a class, all public methods on the class will be treated as things
+ * that should be invoked. If an instance method is annotated, or the public
+ * methods of the class are instance methods, an instance of the type will be
+ * created to invoke the methods on.
+ * <p>
+ * Both constructors and instance methods of an annotated class can take
+ * arguments; Fixture types or methods must exist that can satisfy all of the
+ * arguments taken by methods that are to be called.
+ * </p>
  *
  * @author Tim Boudreau
  */
-public enum FailureSeverity {
-    /**
-     * Warning severity - will not result in an assertion error (unless you want
-     * it to).
-     */
-    WARNING,
-    /**
-     * Fatal severity - will result in an assertion error.
-     */
-    FATAL;
-    
-    @Override
-    public String toString() {
-        return name().toString();
-    }
+@Retention(RetentionPolicy.SOURCE)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Invokable {
+
+    String name() default "";
 }

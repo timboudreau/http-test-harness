@@ -144,7 +144,12 @@ final class TestResultsImpl implements TestResults<HttpResponse<String>> {
 
     @Override
     public boolean hasFailures() {
-        return anyFailures;
+        for (AssertionResult ar : this) {
+            if (ar.status().isFailure()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -24,6 +24,7 @@
 
 package com.mastfrog.http.harness.difference;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /**
@@ -36,7 +37,11 @@ final class SimpleDifference<T> implements Difference<T>{
     private final T nue;
     private final DifferenceKind kind;
 
-    SimpleDifference(T old, T nue, DifferenceKind kind) {
+    SimpleDifference(
+            @JsonProperty("oldValue") 
+            T old, 
+            @JsonProperty("newValue") T nue, 
+            @JsonProperty("kind") DifferenceKind kind) {
         this.old = old;
         this.nue = nue;
         this.kind = kind;
@@ -44,16 +49,19 @@ final class SimpleDifference<T> implements Difference<T>{
     
 
     @Override
+    @JsonProperty("oldValue") 
     public T oldValue() {
         return old;
     }
 
     @Override
+    @JsonProperty("nueValue") 
     public T newValue() {
         return nue;
     }
 
     @Override
+    @JsonProperty("kind") 
     public DifferenceKind kind() {
         return kind;
     }

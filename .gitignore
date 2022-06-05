@@ -1,5 +1,7 @@
 *.class
-
+.DS_Store
+test-report.json
+test-report.html
 # Package Files #
 *.jar
 *.war

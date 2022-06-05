@@ -29,6 +29,10 @@ package com.mastfrog.http.harness.difference;
  */
 public enum DifferenceKind {
     CHANGE, INSERTION, DELETION, NONE, UNKNOWN;
+    
+    public String toString() {
+        return name().toLowerCase();
+    }
 
     public String format(Object old, Object nue) {
         switch (this) {

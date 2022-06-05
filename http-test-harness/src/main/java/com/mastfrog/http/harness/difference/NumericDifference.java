@@ -23,6 +23,9 @@
  */
 package com.mastfrog.http.harness.difference;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import static com.mastfrog.util.preconditions.Checks.notNull;
 import static java.lang.Math.abs;
 import java.text.DecimalFormat;
@@ -37,17 +40,20 @@ final class NumericDifference implements Difference<Number> {
     private final Number old;
     private final Number nue;
 
-    NumericDifference(Number old, Number nue) {
+    @JsonCreator
+    NumericDifference(@JsonProperty("oldValue") Number old, @JsonProperty("newValue") Number nue) {
         this.old = notNull("old", old);
         this.nue = notNull("nue", nue);
     }
 
     @Override
+    @JsonProperty("oldValue") 
     public Number oldValue() {
         return old;
     }
 
     @Override
+    @JsonProperty("newValue") 
     public Number newValue() {
         return nue;
     }
@@ -58,6 +64,7 @@ final class NumericDifference implements Difference<Number> {
     }
 
     @Override
+    @JsonIgnore
     public DifferenceKind kind() {
         return DifferenceKind.CHANGE;
     }

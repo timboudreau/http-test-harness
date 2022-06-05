@@ -137,4 +137,9 @@ final class URIConvertingTestHarness<U, O> implements HttpTestHarness<U> {
     public <T> TestRequest postObject(U uri, T toSerialize) {
         return delegate.postObject(converter.apply(uri), toSerialize);
     }
+
+    @Override
+    public void awaitQuiet(Duration dur, boolean killOnTimeout) {
+        delegate.awaitQuiet(dur, killOnTimeout);
+    }
 }

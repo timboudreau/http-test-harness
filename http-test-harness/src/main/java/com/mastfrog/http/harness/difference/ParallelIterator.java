@@ -353,11 +353,11 @@ final class ParallelIterator<T extends Object> {
     /**
      * Get the list of changes
      */
-    List<? extends ListDiffChange> getChanges() {
+    List<? extends ListDifference> getChanges() {
         if (oi != null) {
             go();
         }
-        return Collections.unmodifiableList(changes);
+        return Collections.unmodifiableList(crystallize(changes));
     }
 
     /**
@@ -395,6 +395,14 @@ final class ParallelIterator<T extends Object> {
                     + " < " + currChange.getEnd();
             currChange = null;
         }
+    }
+    
+    private List<ListDifference> crystallize(Collection<? extends ListDiffChange> changes) {
+        List<ListDifference> result = new ArrayList<>(changes.size());
+        for (ListDiffChange ch : changes) {
+            result.add(ch.crystallize());
+        }
+        return result;
     }
 
     /*
@@ -448,6 +456,10 @@ final class ParallelIterator<T extends Object> {
             this.type = type;
             assert (type == DELETE || type == CHANGE || type == INSERT) : ""
                     + type;
+        }
+        
+        ListDifference crystallize() {
+            return new ListDifference(this);
         }
 
         /**

@@ -48,6 +48,11 @@ public enum AssertionStatus {
      */
     DID_NOT_RUN;
 
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
+
     static AssertionStatus of(boolean successOrFailure) {
         return successOrFailure ? SUCCESS : FAILURE;
     }

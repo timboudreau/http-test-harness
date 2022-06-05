@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Tim Boudreau.
+ * Copyright 2022 Mastfrog Technologies.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,31 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.mastfrog.http.harness;
+package com.mastfrog.http.test.microframework;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The severity with which an assertion failure should be treated; the default
- * is FATAL. To use a different severity, use
- * <code>Assertions.withSeverity(Consumer&lt;Assertions&gt;)</code> to add
- * assertions with altered severity, for things which may fail, where that
- * should be reported but is not necessarily catastrophic (also useful to test
- * <i>that</i> things fail in an expected way).
+ * A fixture is (if a class is annotated) or produces (if a method is annotated)
+ * an object of some type that is needed by an Invokable test method.
+ * <p>
+ * If a fixture type implements AutoCloseable, Closeable, or has a method named
+ * <code>shutdown</code> (taking or not taking arguments, but the arguments must
+ * be satisfiable), that method will be called once all work is complete. Such
+ * methods are also useful to block the main thread until background work
+ * performed by invokables has completed.
+ * </p>
+ * <p>
+ * A fixture class (or an Invokable) may implement <code>OnError</code>, in
+ * which case if exceptions are thrown by an invokable, its
+ * <code>onError()</code> method will be called.
+ * </p>
  *
  * @author Tim Boudreau
  */
-public enum FailureSeverity {
-    /**
-     * Warning severity - will not result in an assertion error (unless you want
-     * it to).
-     */
-    WARNING,
-    /**
-     * Fatal severity - will result in an assertion error.
-     */
-    FATAL;
-    
-    @Override
-    public String toString() {
-        return name().toString();
-    }
+@Retention(RetentionPolicy.SOURCE)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Fixture {
+
 }

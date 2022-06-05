@@ -32,18 +32,21 @@ THE SOFTWARE. -->
     </parent>
 
     <artifactId>http-test-harness-parent</artifactId>
-    <version>0.9.3-dev</version>
+    <version>0.9.4-dev</version>
 
     <packaging>pom</packaging>
 
     <modules>
         <module>http-test-harness</module>
         <module>http-test-harness-tests</module>
+        <module>http-test-microframework</module>
+        <module>microframework-test-app</module>
     </modules>
 
     <properties>
         <bouncycastle.version>1.70</bouncycastle.version>
         <mastfrog.concurrent.version>${mastfrog.version}</mastfrog.concurrent.version>
+        <java.vogon.version>${mastfrog.version}.1</java.vogon.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
@@ -59,6 +62,11 @@ THE SOFTWARE. -->
                 <groupId>com.mastfrog</groupId>
                 <artifactId>http-test-harness-tests</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mastfrog</groupId>
+                <artifactId>java-vogon</artifactId>
+                <version>${java.vogon.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

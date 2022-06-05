@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Tim Boudreau.
+ * Copyright 2022 Mastfrog Technologies.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,31 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.mastfrog.http.harness;
+package com.mastfrog.http.test.microframework;
 
 /**
- * The severity with which an assertion failure should be treated; the default
- * is FATAL. To use a different severity, use
- * <code>Assertions.withSeverity(Consumer&lt;Assertions&gt;)</code> to add
- * assertions with altered severity, for things which may fail, where that
- * should be reported but is not necessarily catastrophic (also useful to test
- * <i>that</i> things fail in an expected way).
+ * If implemented by a Fixture, any uncaught exceptions will be passed to this
+ * method.
  *
  * @author Tim Boudreau
  */
-public enum FailureSeverity {
+public interface OnError {
+
     /**
-     * Warning severity - will not result in an assertion error (unless you want
-     * it to).
+     * Called when an uncaught exception is thrown.
+     *
+     * @param task The phase of operation, such as "run"
+     * @param executing The thing being executed
+     * @param thrown The error
      */
-    WARNING,
-    /**
-     * Fatal severity - will result in an assertion error.
-     */
-    FATAL;
-    
-    @Override
-    public String toString() {
-        return name().toString();
-    }
+    void onError(String task, String executing, Throwable thrown);
 }

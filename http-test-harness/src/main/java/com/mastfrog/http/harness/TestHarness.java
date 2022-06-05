@@ -198,6 +198,10 @@ final class TestHarness extends AbstractHttpTestHarness {
         }
         return this;
     }
+    
+    public void awaitQuiet(Duration dur, boolean killOnTimeout) {
+        bookkeeping.awaitQuiet(dur, killOnTimeout);
+    }
 
     @Override
     public boolean await(Duration dur) throws InterruptedException {

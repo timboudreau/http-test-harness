@@ -23,7 +23,9 @@
  */
 package com.mastfrog.http.harness;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mastfrog.http.harness.difference.Difference;
 import static com.mastfrog.util.preconditions.Checks.notNull;
 import com.mastfrog.util.strings.Escaper;
@@ -41,17 +43,24 @@ import java.util.Set;
  */
 public final class AssertionResult {
 
+    @JsonProperty("status")
     private final AssertionStatus status;
+    @JsonProperty("severity")
     private final FailureSeverity severity;
+    @JsonProperty("actualValue")
     private final Object actualValue;
+    @JsonProperty("message")
     private final String message;
+    @JsonProperty(value = "differences", required = false)
     private final Map<String, Set<Difference<?>>> differences;
 
+    @JsonCreator
     public AssertionResult(
-            AssertionStatus status,
-            FailureSeverity severity,
-            String message, Object actualValue,
-            Map<String, Set<Difference<?>>> differences) {
+            @JsonProperty("status") AssertionStatus status,
+            @JsonProperty("severity") FailureSeverity severity,
+            @JsonProperty("message") String message,
+            @JsonProperty("actualValue") Object actualValue,
+            @JsonProperty(value = "differences", required = false) Map<String, Set<Difference<?>>> differences) {
         this.status = notNull("status", status);
         this.severity = notNull("severity", severity);
         this.message = notNull("message", message);

@@ -1,6 +1,9 @@
 
 package com.mastfrog.http.harness.difference;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mastfrog.function.IntTriConsumer;
 import static com.mastfrog.util.strings.Escaper.NEWLINES_AND_OTHER_WHITESPACE;
 import com.mastfrog.util.strings.LevenshteinDistance;
@@ -23,23 +26,28 @@ final class StringDifference implements Difference<CharSequence> {
     private static final int STRING_LENGTH_LIMIT = 32;
     private final CharSequence old;
     private final CharSequence nue;
-
-    StringDifference(CharSequence a, CharSequence b) {
-        this.old = a;
-        this.nue = b;
+    
+    @JsonCreator
+    StringDifference(@JsonProperty("oldValue") CharSequence old, 
+            @JsonProperty("newValue") CharSequence nue) {
+        this.old = old;
+        this.nue = nue;
     }
 
     @Override
+    @JsonProperty("oldValue") 
     public CharSequence oldValue() {
         return old;
     }
 
     @Override
+    @JsonProperty("newValue") 
     public CharSequence newValue() {
         return nue;
     }
 
     @Override
+    @JsonIgnore
     public DifferenceKind kind() {
         return DifferenceKind.CHANGE;
     }

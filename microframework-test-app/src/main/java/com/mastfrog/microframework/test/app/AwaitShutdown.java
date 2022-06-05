@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Tim Boudreau.
+ * Copyright 2022 Mastfrog Technologies.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,31 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.mastfrog.http.harness;
+package com.mastfrog.microframework.test.app;
+
+import com.mastfrog.http.harness.HttpTestHarness;
+import com.mastfrog.http.test.microframework.Fixture;
+import java.time.Duration;
 
 /**
- * The severity with which an assertion failure should be treated; the default
- * is FATAL. To use a different severity, use
- * <code>Assertions.withSeverity(Consumer&lt;Assertions&gt;)</code> to add
- * assertions with altered severity, for things which may fail, where that
- * should be reported but is not necessarily catastrophic (also useful to test
- * <i>that</i> things fail in an expected way).
  *
  * @author Tim Boudreau
  */
-public enum FailureSeverity {
-    /**
-     * Warning severity - will not result in an assertion error (unless you want
-     * it to).
-     */
-    WARNING,
-    /**
-     * Fatal severity - will result in an assertion error.
-     */
-    FATAL;
+@Fixture
+public class AwaitShutdown {
     
-    @Override
-    public String toString() {
-        return name().toString();
+    public void shutdown(HttpTestHarness<String> harn) throws InterruptedException {
+        Thread.sleep(2000);
+        System.out.println("awaitShutdown awaitQuiet");
+        harn.awaitQuiet(Duration.ofMinutes(5), false);
+        System.out.println("awaitShutdown awaitQuiet exit");
+        System.out.println("awaitShutdown await");
+        harn.await();
+        System.out.println("awaitShutdown await exit");
     }
 }
