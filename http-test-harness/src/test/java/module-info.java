@@ -28,12 +28,12 @@ open module com.mastfrog.http.harness {
 //    requires com.fasterxml.jackson.core; // Needed on JDK 11, for the javadoc task only
 
     // These are pending modularization and will change when that happens:
-    requires util.misc;
-    requires util.strings;
-    requires util.preconditions;
-    requires concurrent;
-    requires function;
-    requires predicates;
+    requires com.mastfrog.misc;
+    requires com.mastfrog.strings;
+    requires com.mastfrog.preconditions;
+    requires com.mastfrog.concurrent;
+    requires com.mastfrog.function;
+    requires com.mastfrog.predicates;
     requires transitive org.junit.jupiter.api;
     requires transitive org.junit.jupiter.engine;
 }

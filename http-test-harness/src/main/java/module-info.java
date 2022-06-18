@@ -27,10 +27,10 @@ open module com.mastfrog.http.harness {
     requires transitive com.fasterxml.jackson.databind;
 
     // These are pending modularization and will change when that happens:
-    requires util.misc;
-    requires util.strings;
-    requires util.preconditions;
-    requires concurrent;
-    requires function;
-    requires predicates;
+    requires com.mastfrog.misc;
+    requires com.mastfrog.strings;
+    requires com.mastfrog.preconditions;
+    requires com.mastfrog.concurrent;
+    requires com.mastfrog.function;
+    requires com.mastfrog.predicates;
 }

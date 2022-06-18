@@ -28,11 +28,11 @@ THE SOFTWARE. -->
     <parent>
         <groupId>com.mastfrog</groupId>
         <artifactId>mastfrog-parent</artifactId>
-        <version>2.8.1</version>
+        <version>2.8.2</version>
     </parent>
 
     <artifactId>http-test-harness-parent</artifactId>
-    <version>0.9.4-dev</version>
+    <version>0.9.5-dev</version>
 
     <packaging>pom</packaging>
 
@@ -46,7 +46,7 @@ THE SOFTWARE. -->
     <properties>
         <bouncycastle.version>1.70</bouncycastle.version>
         <mastfrog.concurrent.version>${mastfrog.version}</mastfrog.concurrent.version>
-        <java.vogon.version>${mastfrog.version}.1</java.vogon.version>
+        <java.vogon.version>${mastfrog.version}</java.vogon.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
