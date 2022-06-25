@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.mastfrog</groupId>
         <artifactId>http-test-harness-parent</artifactId>
-        <version>0.9.5-dev</version>
+        <version>0.9.6-dev</version>
     </parent>
     <artifactId>microframework-test-app</artifactId>
     <dependencies>
