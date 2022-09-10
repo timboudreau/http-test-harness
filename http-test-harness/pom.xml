@@ -27,7 +27,7 @@ THE SOFTWARE. -->
     <parent>
         <groupId>com.mastfrog</groupId>
         <artifactId>http-test-harness-parent</artifactId>
-        <version>0.9.6-dev</version>
+        <version>0.9.7-dev</version>
         <relativePath>../</relativePath>
     </parent>
 
