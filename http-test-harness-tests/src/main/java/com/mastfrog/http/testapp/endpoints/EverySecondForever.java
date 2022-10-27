@@ -23,7 +23,6 @@
  */
 package com.mastfrog.http.testapp.endpoints;
 
-import static com.google.common.net.MediaType.PLAIN_TEXT_UTF_8;
 import com.mastfrog.acteur.Acteur;
 import com.mastfrog.acteur.HttpEvent;
 import com.mastfrog.acteur.annotations.HttpCall;
@@ -33,6 +32,7 @@ import com.mastfrog.acteur.preconditions.Description;
 import com.mastfrog.acteur.preconditions.Methods;
 import com.mastfrog.acteur.preconditions.ParametersMustBeNumbersIfPresent;
 import com.mastfrog.acteur.preconditions.Path;
+import static com.mastfrog.mime.MimeType.PLAIN_TEXT_UTF_8;
 import com.mastfrog.util.time.TimeUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
@@ -66,7 +66,7 @@ public class EverySecondForever extends Acteur implements ChannelFutureListener 
     @Inject
     EverySecondForever(HttpEvent evt, ScheduledExecutorService pool) {
         this.pool = pool;
-        delaySeconds = evt.longUrlParameter("delaySeconds").or(1L);
+        delaySeconds = evt.uriQueryParameter("delaySeconds", Long.class).orElse(1L);
         add(CONTENT_TYPE, PLAIN_TEXT_UTF_8);
         start = ZonedDateTime.now();
         setChunked(true);

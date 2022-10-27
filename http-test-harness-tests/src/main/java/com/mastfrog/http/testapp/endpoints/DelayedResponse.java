@@ -57,7 +57,7 @@ public class DelayedResponse extends Acteur implements Runnable {
         if (event.path().size() > 1) {
             name = event.path().lastElement().toString();
         }
-        long delay = event.longUrlParameter("delay").or(500L);
+        long delay = event.uriQueryParameter("delay", Long.class).orElse(500L);
         fut = deferThenRespond(HttpResponseStatus.OK);
         pool.schedule(this, delay, TimeUnit.MILLISECONDS);
     }

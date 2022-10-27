@@ -23,7 +23,6 @@
  */
 package com.mastfrog.http.testapp.endpoints;
 
-import com.google.common.net.MediaType;
 import com.mastfrog.acteur.Acteur;
 import com.mastfrog.acteur.HttpEvent;
 import com.mastfrog.acteur.annotations.HttpCall;
@@ -34,6 +33,7 @@ import com.mastfrog.acteur.preconditions.Methods;
 import com.mastfrog.acteur.preconditions.ParametersMustBeNumbersIfPresent;
 import com.mastfrog.acteur.preconditions.Path;
 import com.mastfrog.acteur.preconditions.RequiredUrlParameters;
+import static com.mastfrog.mime.MimeType.JSON_UTF_8;
 import javax.inject.Inject;
 
 /**
@@ -51,7 +51,7 @@ class HelloJson extends Acteur {
 
     @Inject
     HelloJson(HttpEvent request) {
-        add(Headers.CONTENT_TYPE, MediaType.JSON_UTF_8);
+        add(Headers.CONTENT_TYPE, JSON_UTF_8);
         String txt = request.urlParameter("text");
         long val = request.longUrlParameter("val").get();
         ok(new SomeObject((int) val, txt));

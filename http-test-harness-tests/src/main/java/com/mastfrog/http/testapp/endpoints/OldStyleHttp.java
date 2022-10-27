@@ -23,7 +23,6 @@
  */
 package com.mastfrog.http.testapp.endpoints;
 
-import static com.google.common.net.MediaType.PLAIN_TEXT_UTF_8;
 import com.mastfrog.acteur.Acteur;
 import com.mastfrog.acteur.HttpEvent;
 import com.mastfrog.acteur.annotations.HttpCall;
@@ -32,6 +31,7 @@ import static com.mastfrog.acteur.headers.Method.GET;
 import com.mastfrog.acteur.preconditions.Description;
 import com.mastfrog.acteur.preconditions.Methods;
 import com.mastfrog.acteur.preconditions.Path;
+import static com.mastfrog.mime.MimeType.PLAIN_TEXT_UTF_8;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -53,13 +53,14 @@ import javax.inject.Inject;
         + "correctly (it HAS no enum constant for HTTP 1.0).  It lies.")
 public class OldStyleHttp extends Acteur implements ChannelFutureListener {
 
-    private static final long MAX_INVOCATIONS = 10;
+    private static final int MAX_INVOCATIONS = 10;
     private final int totalInvocations;
     private volatile int invocations;
 
     @Inject
     OldStyleHttp(HttpEvent evt) {
-        totalInvocations = evt.longUrlParameter("count").or(MAX_INVOCATIONS).intValue();
+        totalInvocations = evt.uriQueryParameter("count", Integer.class)
+                .orElse(MAX_INVOCATIONS).intValue();
         add(CONTENT_TYPE, PLAIN_TEXT_UTF_8);
         setChunked(false);
         response().unchunked();

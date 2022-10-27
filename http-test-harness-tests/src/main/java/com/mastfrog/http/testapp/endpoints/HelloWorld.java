@@ -23,7 +23,6 @@
  */
 package com.mastfrog.http.testapp.endpoints;
 
-import com.google.common.net.MediaType;
 import com.mastfrog.acteur.Acteur;
 import com.mastfrog.acteur.annotations.HttpCall;
 import com.mastfrog.acteur.headers.Headers;
@@ -31,6 +30,7 @@ import com.mastfrog.acteur.headers.Method;
 import com.mastfrog.acteur.preconditions.Description;
 import com.mastfrog.acteur.preconditions.Methods;
 import com.mastfrog.acteur.preconditions.Path;
+import static com.mastfrog.mime.MimeType.PLAIN_TEXT_UTF_8;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
 /**
@@ -44,7 +44,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 class HelloWorld extends Acteur {
 
     HelloWorld() {
-        add(Headers.CONTENT_TYPE, MediaType.PLAIN_TEXT_UTF_8);
+        add(Headers.CONTENT_TYPE, PLAIN_TEXT_UTF_8);
         add(Headers.stringHeader("Wookies"), "food");
         HttpResponseStatus variableResponseCode
                 = System.currentTimeMillis() % 2 == 0

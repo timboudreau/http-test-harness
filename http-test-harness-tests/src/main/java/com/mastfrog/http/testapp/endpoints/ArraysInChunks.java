@@ -23,7 +23,6 @@
  */
 package com.mastfrog.http.testapp.endpoints;
 
-import static com.google.common.net.MediaType.JSON_UTF_8;
 import com.mastfrog.acteur.Acteur;
 import com.mastfrog.acteur.Event;
 import com.mastfrog.acteur.HttpEvent;
@@ -38,6 +37,7 @@ import com.mastfrog.acteur.preconditions.ParametersMustBeNumbersIfPresent;
 import com.mastfrog.acteur.preconditions.Path;
 import com.mastfrog.http.testapp.endpoints.ArraysInChunks.ChunkRangeInfo;
 import com.mastfrog.http.testapp.endpoints.ArraysInChunks.WriteChunkResponse;
+import static com.mastfrog.mime.MimeType.JSON_UTF_8;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
@@ -62,9 +62,9 @@ public class ArraysInChunks extends Acteur {
 
     @Inject
     ArraysInChunks(HttpEvent evt) {
-        long start = evt.longUrlParameter("start").or(0L);
-        long count = evt.longUrlParameter("count").or(1000L);
-        long by = evt.longUrlParameter("by").or(100L);
+        long start = evt.uriQueryParameter("start", Long.class).orElse(0L);
+        long count = evt.uriQueryParameter("count", Long.class).orElse(1000L);
+        long by = evt.uriQueryParameter("by", Long.class).orElse(100L);
         next(new ChunkRangeInfo(start, count, by));
     }
 

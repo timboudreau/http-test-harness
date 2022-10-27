@@ -23,7 +23,6 @@
  */
 package com.mastfrog.http.testapp.endpoints;
 
-import com.google.common.net.MediaType;
 import com.mastfrog.acteur.Acteur;
 import com.mastfrog.acteur.annotations.HttpCall;
 import com.mastfrog.acteur.headers.Headers;
@@ -32,6 +31,7 @@ import com.mastfrog.acteur.preconditions.Description;
 import com.mastfrog.acteur.preconditions.InjectRequestBodyAs;
 import com.mastfrog.acteur.preconditions.Methods;
 import com.mastfrog.acteur.preconditions.Path;
+import static com.mastfrog.mime.MimeType.JSON_UTF_8;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import javax.inject.Inject;
 
@@ -52,7 +52,7 @@ class JsonInput extends Acteur {
         if (obj.value < 0) {
             badRequest("Negative numbers aren't nice.");
         } else {
-            add(Headers.CONTENT_TYPE, MediaType.JSON_UTF_8);
+            add(Headers.CONTENT_TYPE, JSON_UTF_8);
             reply(HttpResponseStatus.ACCEPTED, obj.incremented());
         }
     }
