@@ -27,8 +27,7 @@ THE SOFTWARE. -->
     <parent>
         <groupId>com.mastfrog</groupId>
         <artifactId>http-test-harness-parent</artifactId>
-        <version>0.9.8-dev</version>
-        <relativePath>../</relativePath>
+        <version>0.9.9-dev</version>
     </parent>
 
     <artifactId>http-test-harness</artifactId>
@@ -87,13 +86,32 @@ THE SOFTWARE. -->
                     <release>11</release>
                 </configuration>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <useModulePath>false</useModulePath>
                 </configuration>
+            </plugin>
+
+            <plugin>
+
+                <groupId>com.mastfrog</groupId>
+                <artifactId>automodule-inject</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <verbose>true</verbose>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>inject-automodule-name</id>
+                        <goals>
+                            <goal>automodule-inject</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
             </plugin>
             
         </plugins>
