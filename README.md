@@ -13,7 +13,8 @@ testing API.
 
   * Clean, intuitive, builder-based API
   * Fully asynchronous test execution - many tests can be run concurrently, or they can be
-    throttled using a `Semaphore` you pass to your `TestHarnessBuilder`.
+    throttled using a `Semaphore` you pass to your `TestHarnessBuilder`, and can either be waited
+    for singly or as a group.
   * Simple JSON report generation
   * Configurable serialization (uses Jackson by default)
   * Not tied to any particular testing framework
