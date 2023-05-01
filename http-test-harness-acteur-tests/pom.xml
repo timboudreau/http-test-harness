@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.mastfrog</groupId>
+        <artifactId>http-test-harness-parent</artifactId>
+        <version>3.0.0</version>
+    </parent>
+
+    <artifactId>http-test-harness-acteur-tests</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>${mastfrog.groupId}</groupId>
+            <artifactId>acteur</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${mastfrog.groupId}</groupId>
+            <artifactId>acteur-annotation-processors</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${mastfrog.groupId}</groupId>
+            <artifactId>giulius-annotation-processors</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${mastfrog.groupId}</groupId>
+            <artifactId>http-test-harness-acteur</artifactId>
+            <version>${mastfrog.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${mastfrog.groupId}</groupId>
+            <artifactId>giulius-tests</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

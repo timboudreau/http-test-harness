@@ -41,6 +41,8 @@ THE SOFTWARE. -->
         <module>http-test-harness-tests</module>
         <module>http-test-microframework</module>
         <module>microframework-test-app</module>
+        <module>http-test-harness-acteur</module>
+        <module>http-test-harness-acteur-tests</module>
     </modules>
 
     <properties>

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Tim Boudreau.
+ * Copyright 2023 Mastfrog Technologies.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,19 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-open module com.mastfrog.http.harness {
-    requires java.net.http;
-//    requires com.fasterxml.jackson.annotation;
-    requires transitive com.fasterxml.jackson.databind;
-//    requires com.fasterxml.jackson.core; // Needed on JDK 11, for the javadoc task only
+package com.mastfrog.http.test.harness.acteur.tests;
 
-    // These are pending modularization and will change when that happens:
-    requires com.mastfrog.misc;
-    requires com.mastfrog.strings;
-    requires com.mastfrog.preconditions;
-    requires com.mastfrog.concurrent;
-    requires com.mastfrog.function;
-    requires com.mastfrog.predicates;
-    requires transitive org.junit.jupiter.api;
-    requires transitive org.junit.jupiter.engine;
+import com.mastfrog.acteur.Acteur;
+import com.mastfrog.acteur.annotations.HttpCall;
+import static com.mastfrog.acteur.headers.Headers.stringHeader;
+import static com.mastfrog.acteur.headers.Method.GET;
+import com.mastfrog.acteur.preconditions.Methods;
+import com.mastfrog.acteur.preconditions.Path;
+
+/**
+ *
+ * @author Tim Boudreau
+ */
+@HttpCall
+@Methods(GET)
+@Path("hello")
+final class HelloActeur extends Acteur {
+
+    HelloActeur() {
+        add(stringHeader("x-woog"), "blah");
+        ok("Hello world!");
+    }
 }

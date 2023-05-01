@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Tim Boudreau.
+ * Copyright 2023 Mastfrog Technologies.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,18 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-open module com.mastfrog.http.harness {
-    requires java.net.http;
-    requires static com.fasterxml.jackson.annotation;
-    requires com.fasterxml.jackson.databind;
-    // Required to build on JDK 11 but not on 17
-    requires com.fasterxml.jackson.core;
+package com.mastfrog.http.test.harness.acteur.tests;
 
-    // These are pending modularization and will change when that happens:
-    requires com.mastfrog.misc;
-    requires com.mastfrog.strings;
-    requires com.mastfrog.preconditions;
-    requires com.mastfrog.concurrent;
-    requires com.mastfrog.function;
-    requires com.mastfrog.predicates;
+import com.google.inject.AbstractModule;
+import com.mastfrog.acteur.annotations.GenericApplication;
+import com.mastfrog.acteur.annotations.GenericApplicationModule;
+import com.mastfrog.giulius.scope.ReentrantScope;
+import com.mastfrog.settings.Settings;
+
+/**
+ *
+ * @author Tim Boudreau
+ */
+public final class HttpTestHarnessActeurTests extends AbstractModule {
+
+    private static final ReentrantScope SCOPE = new ReentrantScope();
+    private final Settings settings;
+
+    public HttpTestHarnessActeurTests(Settings settings) {
+        this.settings = settings;
+    }
+
+    @Override
+    protected void configure() {
+        install(new GenericApplicationModule(SCOPE, settings, GenericApplication.class));
+    }
+
 }

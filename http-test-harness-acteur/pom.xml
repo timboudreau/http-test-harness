@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.mastfrog</groupId>
+        <artifactId>http-test-harness-parent</artifactId>
+        <version>3.0.0</version>
+    </parent>
+    <artifactId>http-test-harness-acteur</artifactId>
+    <dependencies>
+
+        <dependency>
+            <groupId>${mastfrog.groupId}</groupId>
+            <artifactId>http-test-harness</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${mastfrog.groupId}</groupId>
+            <artifactId>acteur-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${mastfrog.groupId}</groupId>
+            <artifactId>shutdown-hooks</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mastfrog</groupId>
+            <artifactId>util-net</artifactId>
+            <version>2.9.7</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+</project>
