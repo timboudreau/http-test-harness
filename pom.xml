@@ -28,11 +28,11 @@ THE SOFTWARE. -->
     <parent>
         <groupId>com.mastfrog</groupId>
         <artifactId>mastfrog-parent</artifactId>
-        <version>2.9.1</version>
+        <version>3.0.0</version>
+        <relativePath/>
     </parent>
 
     <artifactId>http-test-harness-parent</artifactId>
-    <version>0.9.9-dev</version>
 
     <packaging>pom</packaging>
 
@@ -45,105 +45,9 @@ THE SOFTWARE. -->
 
     <properties>
         <bouncycastle.version>1.70</bouncycastle.version>
-        <mastfrog.concurrent.version>${mastfrog.version}</mastfrog.concurrent.version>
-        <java.vogon.version>${mastfrog.version}</java.vogon.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.mastfrog</groupId>
-                <artifactId>http-test-harness</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mastfrog</groupId>
-                <artifactId>http-test-harness-tests</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mastfrog</groupId>
-                <artifactId>java-vogon</artifactId>
-                <version>${java.vogon.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.10.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M7</version>
-                    <configuration>
-                        <parallel>all</parallel>
-                        <parallelMavenExecution>true</parallelMavenExecution>
-                        <perCoreThreadCount>6</perCoreThreadCount>
-                        <threadCount>20</threadCount>
-                        <forkCount>16</forkCount>
-                        <reuseForks>true</reuseForks>
-                        <trimStackTrace>false</trimStackTrace>
-                        <useFile>false</useFile>
-                        <systemPropertyVariables>
-                            <junit.jupiter.execution.parallel.enabled>true</junit.jupiter.execution.parallel.enabled>
-                            <unit.test>true</unit.test>
-                            <acteur.debug>false</acteur.debug>
-                            <forkNumber>${surefire.forkNumber}</forkNumber>
-                            <system.exit.on.bind.failure>false</system.exit.on.bind.failure>
-                        </systemPropertyVariables>
-                        <properties>
-                            <configurationProperties>
-                                <junit.jupiter.execution.parallel.config.dynamic.factor>3</junit.jupiter.execution.parallel.config.dynamic.factor>
-                                <junit.jupiter.execution.parallel.enabled>true</junit.jupiter.execution.parallel.enabled>
-                                <junit.jupiter.execution.parallel.mode.default>concurrent</junit.jupiter.execution.parallel.mode.default>
-                                <junit.jupiter.execution.parallel.mode.classes.default>concurrent</junit.jupiter.execution.parallel.mode.classes.default>
-                            </configurationProperties>
-                        </properties>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <configuration>
-                        <quiet>true</quiet>
-                        <doclint>none</doclint>
-                        <additionalOptions>-html5</additionalOptions>
-                        <source>11</source>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>default-cli</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <version>[11,)</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
     <scm>
         <url>https://github.com/timboudreau/http-test-harness</url>
