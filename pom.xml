@@ -47,8 +47,6 @@ THE SOFTWARE. -->
 
     <properties>
         <bouncycastle.version>1.70</bouncycastle.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <scm>

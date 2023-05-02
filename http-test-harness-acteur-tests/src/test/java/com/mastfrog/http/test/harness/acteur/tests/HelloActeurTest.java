@@ -25,7 +25,7 @@ package com.mastfrog.http.test.harness.acteur.tests;
 
 import com.mastfrog.acteur.annotations.GenericApplicationModule;
 import com.mastfrog.giulius.tests.GuiceRunner;
-import com.mastfrog.giulius.tests.TestWith;
+import com.mastfrog.giulius.tests.anno.TestWith;
 import com.mastfrog.http.test.harness.acteur.HttpHarness;
 import com.mastfrog.http.test.harness.acteur.HttpTestHarnessModule;
 import java.time.Duration;
