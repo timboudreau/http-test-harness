@@ -28,6 +28,7 @@ import com.mastfrog.acteur.util.ErrorInterceptor;
 import com.mastfrog.acteur.util.Server;
 import com.mastfrog.acteur.util.ServerControl;
 import com.mastfrog.http.harness.HarnessLogLevel;
+import static com.mastfrog.http.harness.HarnessLogLevel.DEBUG;
 import com.mastfrog.http.harness.HttpTestHarness;
 import static com.mastfrog.http.test.harness.acteur.HttpTestHarnessModule.GUICE_BINDING_STARTUP_LATCH;
 import com.mastfrog.settings.Settings;
@@ -37,15 +38,25 @@ import com.mastfrog.util.net.PortFinder;
 import static com.mastfrog.util.preconditions.Exceptions.chuck;
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.net.http.HttpClient.Version;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  *
@@ -101,8 +112,52 @@ final class ServerImplTestHarness implements ErrorInterceptor, Provider<HttpTest
         return port;
     }
 
-    private synchronized boolean ssl() {
+    private boolean ssl() {
         return settings.getBoolean("testSsl", false);
+    }
+
+    private boolean httpClientSecure() {
+        return settings.getBoolean("testSslSecure", false);
+    }
+
+    private HttpClient.Redirect followRedirects() {
+        String val = settings.getString("testFollowRedirects");
+        if (val == null) {
+            return HttpClient.Redirect.NORMAL;
+        }
+        switch (val) {
+            case "never":
+            case "NEVER":
+            case "false":
+                return HttpClient.Redirect.NEVER;
+            case "true":
+            case "ALWAYS":
+            case "always":
+                return HttpClient.Redirect.ALWAYS;
+            case "normal":
+            case "NORMAL":
+            case "default":
+                return HttpClient.Redirect.NORMAL;
+            default:
+                throw new AssertionError("Unknown value for setting 'testFollowRedirects': " + val
+                        + " - must be one of never/false/always/true/normal/default");
+        }
+    }
+
+    private HttpClient.Builder setupSSL(HttpClient.Builder client) {
+        boolean isSsl = ssl();
+        boolean secure = httpClientSecure();
+        if (isSsl && !secure) {
+            System.setProperty("jdk.internal.httpclient.disableHostnameVerification", "true");
+            try {
+                client = client.sslContext(insecureSslContext());
+            } catch (NoSuchAlgorithmException | KeyManagementException ex) {
+                return chuck(ex);
+            }
+        } else if (isSsl && secure) {
+            System.setProperty("jdk.internal.httpclient.disableHostnameVerification", "false");
+        }
+        return client;
     }
 
     synchronized HttpTestHarness<URI> delegate() {
@@ -112,14 +167,21 @@ final class ServerImplTestHarness implements ErrorInterceptor, Provider<HttpTest
         int port_local = port();
         try {
             Server serv = server.get();
-            ServerControl ctrl = serv.start(port_local, ssl());
+            boolean ssl = ssl();
+            ServerControl ctrl = serv.start(port_local, ssl);
             assert ctrl != null;
+
+            HttpClient.Builder client = setupSSL(HttpClient.newBuilder()
+                    .followRedirects(followRedirects())
+                    .version(httpVersion));
+
             delegate = HttpTestHarness.builder()
                     .withDefaultResponseTimeout(Duration.ofMinutes(1))
                     .withHttpVersion(httpVersion)
                     .awaitingReadinessOn(startupLatch)
-                    .withMinimumLogLevel(HarnessLogLevel.DEBUG)
+                    .withMinimumLogLevel(logLevel())
                     .withCodec(codec.get())
+                    .withClient(client.build())
                     .build();
             hooks.add(delegate::shutdown);
             return delegate;
@@ -131,7 +193,13 @@ final class ServerImplTestHarness implements ErrorInterceptor, Provider<HttpTest
     HarnessLogLevel logLevel() {
         String val = settings.getString("harnessLogLevel");
         if (val == null) {
-            return HarnessLogLevel.IMPORTANT;
+            if (settings.getBoolean("http.harness.debug", false)) {
+                return HarnessLogLevel.DEBUG;
+            } else if (settings.getBoolean("http.harness.detail", false)) {
+                return HarnessLogLevel.DETAIL;
+            } else {
+                return HarnessLogLevel.IMPORTANT;
+            }
         }
         for (HarnessLogLevel h : HarnessLogLevel.values()) {
             String s = h.name();
@@ -154,6 +222,9 @@ final class ServerImplTestHarness implements ErrorInterceptor, Provider<HttpTest
         int port_local = port();
         String proto = ssl() ? "https" : "http";
         String uriString = proto + "://localhost:" + port_local;
+        if (logLevel() == DEBUG) {
+            System.out.println("----- " + uriString + " -----");
+        }
         if (t != null && t.length() > 0) {
             if (t.charAt(0) != '/') {
                 uriString += '/';
@@ -163,4 +234,28 @@ final class ServerImplTestHarness implements ErrorInterceptor, Provider<HttpTest
         return URI.create(uriString);
     }
 
+    static SSLContext insecureSslContext() throws NoSuchAlgorithmException, KeyManagementException {
+        TrustManager[] trustAllCerts = new TrustManager[]{NoTrustTrustManager.INSTANCE};
+        SSLContext sc = SSLContext.getInstance("SSL");
+        sc.init(null, trustAllCerts, new SecureRandom());
+        return sc;
+    }
+
+    private static final class NoTrustTrustManager implements X509TrustManager {
+
+        static final NoTrustTrustManager INSTANCE = new NoTrustTrustManager();
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
+
+        public void checkClientTrusted(
+                X509Certificate[] certs, String authType) {
+        }
+
+        public void checkServerTrusted(
+                X509Certificate[] certs, String authType) {
+        }
+    }
 }

@@ -24,6 +24,7 @@
 package com.mastfrog.http.harness;
 
 import com.mastfrog.util.codec.Codec;
+import static com.mastfrog.util.preconditions.Checks.notNull;
 import com.mastfrog.util.preconditions.Exceptions;
 import java.io.IOException;
 import java.net.URI;
@@ -92,6 +93,11 @@ abstract class AbstractHttpTestHarness implements HttpTestHarness<URI> {
     @Override
     public TestRequest post(URI uri, HttpRequest.BodyPublisher pub) {
         return request().POST(pub).uri(uri);
+    }
+
+    @Override
+    public TestRequest options(URI uri) {
+        return request().method("OPTIONS").uri(notNull("uri", uri));
     }
 
     @Override

@@ -29,10 +29,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
+import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -159,9 +161,33 @@ public abstract class TestRequest {
         return this;
     }
 
+    /**
+     * Set an HTTP header on the request.
+     *
+     * @param name The name
+     * @param value The value
+     * @return this
+     */
     public final TestRequest setHeader(String name, String value) {
         bldr = bldr.setHeader(name, value);
         return this;
+    }
+
+    /**
+     * Set a header, using a framework's header converter. This method assumes
+     * the passed function's toString() will return the header name - so it can
+     * be used with, for example, acteur-header's Headers objects - e.g.
+     * <code>setHeader(Headers.IF_MODIFIED_SINCE, ZonedDateTime.now())</code>,
+     * which handles correctly converting a date into an http header.
+     *
+     * @param <T> The value type
+     * @param f A function
+     * @param value A value
+     * @return this
+     */
+    public final <T> TestRequest setHeader(Function<? super T, ? extends CharSequence> f, T value) {
+        CharSequence val = f.apply(value);
+        return setHeader(f.toString(), val.toString());
     }
 
     public final TestRequest GET() {
@@ -187,6 +213,10 @@ public abstract class TestRequest {
     public final TestRequest method(String method, BodyPublisher bodyPublisher) {
         bldr = bldr.method(method, bodyPublisher);
         return this;
+    }
+
+    public final TestRequest method(String method) {
+        return method(method, noBody());
     }
 
     /**

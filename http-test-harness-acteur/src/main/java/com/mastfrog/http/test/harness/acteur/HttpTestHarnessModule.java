@@ -105,7 +105,6 @@ public class HttpTestHarnessModule extends AbstractModule {
             // when Application is injected, and Application is guaranteed to exist
             // by the time the socket is opened.
             if (notified.compareAndSet(false, true)) {
-                new Exception("Launch!").printStackTrace();
                 exe.submit(latch::countDown);
             }
             return harn;

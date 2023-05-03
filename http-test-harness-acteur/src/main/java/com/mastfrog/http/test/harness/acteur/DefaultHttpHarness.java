@@ -131,6 +131,11 @@ final class DefaultHttpHarness implements HttpHarness {
     }
 
     @Override
+    public TestRequest options(String uri) {
+        return delegate.options(uri);
+    }
+
+    @Override
     public TestRequest request() {
         return delegate.request();
     }

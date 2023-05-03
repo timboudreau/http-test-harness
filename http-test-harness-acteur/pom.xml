@@ -28,8 +28,6 @@
         <dependency>
             <groupId>com.mastfrog</groupId>
             <artifactId>util-net</artifactId>
-            <version>2.9.7</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 </project>

@@ -26,8 +26,10 @@ package com.mastfrog.http.harness;
 import com.mastfrog.predicates.Predicates;
 import com.mastfrog.predicates.integer.IntPredicates;
 import com.mastfrog.predicates.string.StringPredicates;
+import static com.mastfrog.util.preconditions.Checks.notNull;
 import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
@@ -66,6 +68,18 @@ public interface Assertions {
      */
     default Assertions assertHasHeader(String header) {
         return assertHeader(header, new HeaderPresence(header));
+    }
+
+    /**
+     * Assert that a header is present in the response's headers, without regard
+     * for what its value is.
+     *
+     * @param header An object whose toString() method resolves to a header name
+     * @return this
+     */
+    default Assertions assertHasHeader(Object header) {
+        String name = Objects.toString(notNull("header", header));
+        return assertHeader(name, new HeaderPresence(name));
     }
 
     /**
@@ -161,6 +175,14 @@ public interface Assertions {
         return assertResponseCode(404);
     }
 
+    /**
+     * Assert a 304 response code.
+     *
+     * @return this
+     */
+    default Assertions assertNotModified() {
+        return assertResponseCode(304);
+    }
     /**
      * Assert a 204 response code.
      *

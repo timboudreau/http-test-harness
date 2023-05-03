@@ -97,6 +97,11 @@ final class URIConvertingTestHarness<U, O> implements HttpTestHarness<U> {
     }
 
     @Override
+    public TestRequest options(U uri) {
+        return delegate.options(converter.apply(uri));
+    }
+
+    @Override
     public HttpTestHarness<U> shutdown() {
         delegate.shutdown();
         return this;

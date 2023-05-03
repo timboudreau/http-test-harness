@@ -24,6 +24,8 @@
 package com.mastfrog.http.harness;
 
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import static java.net.http.HttpRequest.BodyPublishers.noBody;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.List;
@@ -83,6 +85,8 @@ public interface HttpTestHarness<U> {
      */
     TestRequest get(U uri);
 
+    TestRequest options(U uri);
+
     /**
      * Initiate an HTTP DELETE request.
      *
@@ -130,6 +134,16 @@ public interface HttpTestHarness<U> {
      * @return An object for configuring and launching the request
      */
     TestRequest put(U uri, HttpRequest.BodyPublisher pub);
+
+    /**
+     * Initiate an HTTP PUT request with no body.
+     *
+     * @param uri A URI or similar object
+     * @return An object for configuring and launching the request
+     */
+    default TestRequest put(U uri) {
+        return put(uri, noBody());
+    }
 
     /**
      * Initiate an HTTP PUT request, with a request body serialized from the
@@ -183,6 +197,10 @@ public interface HttpTestHarness<U> {
      * @return An object for configuring and launching the request
      */
     TestRequest post(U uri, HttpRequest.BodyPublisher pub);
+
+    default TestRequest post(U uri) {
+        return post(uri, noBody());
+    }
 
     /**
      * Initiate an HTTP POST request, with a request body serialized from the
@@ -280,6 +298,6 @@ public interface HttpTestHarness<U> {
     public static TestHarnessBuilder builder() {
         return new TestHarnessBuilder();
     }
-    
+
     public void awaitQuiet(Duration dur, boolean killOnTimeout);
 }
