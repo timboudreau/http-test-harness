@@ -34,6 +34,7 @@ import com.mastfrog.acteur.preconditions.ParametersMustBeNumbersIfPresent;
 import com.mastfrog.acteur.preconditions.Path;
 import com.mastfrog.acteur.preconditions.RequiredUrlParameters;
 import static com.mastfrog.mime.MimeType.JSON_UTF_8;
+import java.util.Optional;
 import javax.inject.Inject;
 
 /**
@@ -53,7 +54,9 @@ class HelloJson extends Acteur {
     HelloJson(HttpEvent request) {
         add(Headers.CONTENT_TYPE, JSON_UTF_8);
         String txt = request.urlParameter("text");
-        long val = request.longUrlParameter("val").get();
+        Optional<Long> result
+                = request.uriQueryParameter("val", Long.class);
+        long val = result.get();
         ok(new SomeObject((int) val, txt));
     }
 

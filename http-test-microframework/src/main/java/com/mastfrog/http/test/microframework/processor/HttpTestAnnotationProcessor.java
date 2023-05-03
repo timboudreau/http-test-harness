@@ -33,7 +33,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
-import static javax.lang.model.SourceVersion.RELEASE_11;
+import static javax.lang.model.SourceVersion.RELEASE_17;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -45,7 +45,7 @@ import javax.lang.model.element.TypeElement;
  * @author Tim Boudreau
  */
 @SupportedAnnotationTypes({HTTP_TEST_ANNOTATION, TEXT_FIXTURE_ANNOTATION})
-@SupportedSourceVersion(RELEASE_11)
+@SupportedSourceVersion(RELEASE_17)
 public class HttpTestAnnotationProcessor extends AbstractProcessor {
 
     private AnnotationUtils utils;
