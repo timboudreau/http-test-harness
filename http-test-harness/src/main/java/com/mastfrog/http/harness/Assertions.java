@@ -167,6 +167,15 @@ public interface Assertions {
     }
 
     /**
+     * Assert a 201 Created response code.
+     *
+     * @return this
+     */
+    default Assertions assertCreated() {
+        return assertResponseCode(201);
+    }
+
+    /**
      * Assert a 404 response code.
      *
      * @return this
@@ -183,6 +192,7 @@ public interface Assertions {
     default Assertions assertNotModified() {
         return assertResponseCode(304);
     }
+
     /**
      * Assert a 204 response code.
      *
