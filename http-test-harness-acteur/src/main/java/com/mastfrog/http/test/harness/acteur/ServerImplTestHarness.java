@@ -49,8 +49,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -89,7 +87,7 @@ final class ServerImplTestHarness implements ErrorInterceptor, Provider<HttpTest
 
     @Override
     public void onError(Throwable err) {
-        err.printStackTrace();
+//        err.printStackTrace();
         errors.add(err);
     }
 

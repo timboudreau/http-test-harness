@@ -220,6 +220,12 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
     }
 
     @Override
+    public AssertionsImpl assertPayload(Predicate<? super byte[]> bytesTest) {
+        return addBodyAssertion(new BodyAssertion<>(
+                ByteArrayOutputStream::toByteArray, "Test bytes with " + bytesTest, severity(), bytesTest));
+    }
+
+    @Override
     public AssertionsImpl assertVersion(Predicate<? super HttpClient.Version> versionTest) {
         return addHeaderAssertion(new VersionAssertion("HTTP version", severity(),
                 versionTest));
@@ -546,7 +552,7 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
             this.mustEqual = mustEqual;
             this.converter = converter;
         }
-        
+
         @Override
         public String toString() {
             return "equal to " + mustEqual;

@@ -465,4 +465,12 @@ public interface Assertions {
      * @return this
      */
     Assertions withSeverity(FailureSeverity severity, Consumer<Assertions> c);
+
+    /**
+     * Run an assertion against the raw bytes of the response.
+     *
+     * @param bytesTest A predicate
+     * @return this
+     */
+    Assertions assertPayload(Predicate<? super byte[]> bytesTest);
 }
