@@ -35,9 +35,9 @@ public class TestHello {
     @Invokable
     public void testHelloWorld(HttpTestHarness<String> harn) {
         System.out.println("testHelloWorld");
-        harn.get("hello").applyingAssertions(asserts -> {
+        harn.get("hello").asserting(asserts -> {
             asserts.assertBodyContains("Hello")
-                    .assertResponseCode(201)
+                    .assertStatus(201)
                     .assertBody(b -> {
                         System.out.println("hello body: " + b);
                         return true;

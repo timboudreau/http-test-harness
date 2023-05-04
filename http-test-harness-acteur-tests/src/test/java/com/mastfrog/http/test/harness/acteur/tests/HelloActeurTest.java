@@ -43,9 +43,9 @@ public class HelloActeurTest {
     @Test
     public void testHello(HttpHarness harn) {
         harn.get("hello").responseFinishedTimeout(Duration.ofMinutes(1))
-                .applyingAssertions(asserts -> {
+                .asserting(asserts -> {
                     asserts.assertBody("Hello world!")
-                            .assertHeaderEquals("x-woog", "blah")
+                            .assertHeader("x-woog", "blah")
                             .assertHasHeader("date")
                             .assertOk();
                 }).assertNoFailures();
@@ -54,7 +54,7 @@ public class HelloActeurTest {
     @Test
     public void testNotFound(HttpHarness harn) {
         harn.get("nothing").responseFinishedTimeout(Duration.ofMinutes(1))
-                .applyingAssertions(asserts -> {
+                .asserting(asserts -> {
                     asserts
                             .assertHasHeader("date")
                             .assertNotFound();

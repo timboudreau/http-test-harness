@@ -229,7 +229,7 @@ public abstract class TestRequest {
      * @return A test results object
      */
     public final TestResults<HttpResponse<String>> test(Consumer<Assertions> c) {
-        return applyingAssertions(c).assertNoFailures();
+        return asserting(c).assertNoFailures();
     }
 
     /**
@@ -241,6 +241,6 @@ public abstract class TestRequest {
      * the response
      * @return a test results
      */
-    public abstract TestResults<HttpResponse<String>> applyingAssertions(
+    public abstract TestResults<HttpResponse<String>> asserting(
             Consumer<Assertions> c);
 }

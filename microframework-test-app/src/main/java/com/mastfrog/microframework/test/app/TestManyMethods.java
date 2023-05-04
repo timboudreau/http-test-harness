@@ -41,21 +41,21 @@ public class TestManyMethods {
 
     public void testOne(int port) {
         System.out.println("testOne");
-        harness.get("hello").applyingAssertions(asserts -> {
+        harness.get("hello").asserting(asserts -> {
             asserts.assertOk();
         });
     }
 
     public void testTwo() {
         System.out.println("testTwo");
-        harness.get("hello").applyingAssertions(asserts -> {
+        harness.get("hello").asserting(asserts -> {
             asserts.assertOk();
         });
     }
 
     public void testThree(HttpTestHarness<String> harness) {
         System.out.println("testThree");
-        harness.get("hello").applyingAssertions(asserts -> {
+        harness.get("hello").asserting(asserts -> {
             asserts.assertOk();
         });
     }

@@ -267,7 +267,7 @@ final class TestHarness extends AbstractHttpTestHarness {
         }
 
         @Override
-        public TestResults<HttpResponse<String>> applyingAssertions(Consumer<Assertions> assertionConfigurer) {
+        public TestResults<HttpResponse<String>> asserting(Consumer<Assertions> assertionConfigurer) {
             String testMethod = testMethodFindingStrategy.get();
             Thread.currentThread().setName(testMethod + " (was: " + Thread.currentThread().getName() + ")");
             if (!awaitReady()) {

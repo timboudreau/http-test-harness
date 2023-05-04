@@ -194,8 +194,8 @@ public class TestHarnessTest {
                             .assertHasBody()
                             .assertHasHeader("wookies")
                             .assertNoHeader("Ouvre-Tubers")
-                            .assertHeaderEquals("wookies", "food")
-                            .assertResponseCodeIn(200, 201)
+                            .assertHeader("wookies", "food")
+                            .assertStatusIn(200, 201)
                             .assertBody(StringPredicates.predicate("Hello world!"));
                 }).printResults();
     }
@@ -211,7 +211,7 @@ public class TestHarnessTest {
                             .assertHeader("content-type",
                                     StringPredicates.predicate(JSON_UTF_8.toString()))
                             .assertHasBody()
-                            .assertResponseCode(200)
+                            .assertStatus(200)
                             .assertObject("Check json value", SomeObject.class, sob -> {
                                 return new SomeObject(23, "skiddoo").equals(sob);
                             });
@@ -251,7 +251,7 @@ public class TestHarnessTest {
                                 }));
                                 // This test will fail, but should not cause an AssertionError
                                 // because these are warnings
-                                asserts2.assertResponseCode(13);
+                                asserts2.assertStatus(13);
                             })
                             .assertTimesOut();
                 }).printResults();
@@ -296,7 +296,7 @@ public class TestHarnessTest {
     @Test
     public void testEarlyResponse() throws Exception {
         harness.put("early", new DelayedBodyPublisher()).test(asserts -> {
-            asserts.assertResponseCode(409);
+            asserts.assertStatus(409);
         }).printResults();
     }
 
@@ -331,8 +331,8 @@ public class TestHarnessTest {
         SomeObject obj = new SomeObject(23, "skiddoo");
         harness.postObject("jsonInput", obj)
                 .test(asserts -> {
-                    asserts.assertResponseCodeGreaterThan(199)
-                            .assertResponseCodeLessThan(400)
+                    asserts.assertStatusGreaterThan(199)
+                            .assertStatusLessThan(400)
                             .assertVersion(HTTP_1_1)
                             .assertDeserializedBodyEquals(
                                     new SomeObject(24, "skiddoo-xx"));

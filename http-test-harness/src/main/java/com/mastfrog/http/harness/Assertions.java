@@ -100,10 +100,15 @@ public interface Assertions {
      * @param exactHeaderValue
      * @return this
      */
-    default Assertions assertHeaderEquals(String headerName, String exactHeaderValue) {
+    default Assertions assertHeader(String headerName, String exactHeaderValue) {
         return assertHeader(headerName, StringPredicates.predicate(exactHeaderValue));
     }
 
+
+    default Assertions assertHeader(Object headerName, Object exactHeaderValue) {
+        return assertHeader(Objects.toString(headerName),
+                StringPredicates.predicate(Objects.toString(exactHeaderValue)));
+    }
     /**
      * Test that a given HTTP header matches the passed predicate; note that the
      * predicate may be passed <code>null</code> if the header is absent
@@ -122,8 +127,8 @@ public interface Assertions {
      * @param value An integer
      * @return this
      */
-    default Assertions assertResponseCode(int value) {
-        return assertResponseCode(IntPredicates.matching(value));
+    default Assertions assertStatus(int value) {
+        return assertStatus(IntPredicates.matching(value));
     }
 
     /**
@@ -132,8 +137,8 @@ public interface Assertions {
      * @param value A number
      * @return this
      */
-    default Assertions assertResponseCodeLessThan(int value) {
-        return assertResponseCode(IntPredicates.lessThan(value));
+    default Assertions assertStatusLessThan(int value) {
+        return assertStatus(IntPredicates.lessThan(value));
     }
 
     /**
@@ -142,8 +147,8 @@ public interface Assertions {
      * @param value
      * @return
      */
-    default Assertions assertResponseCodeGreaterThan(int value) {
-        return assertResponseCode(IntPredicates.greaterThan(value));
+    default Assertions assertStatusGreaterThan(int value) {
+        return assertStatus(IntPredicates.greaterThan(value));
     }
 
     /**
@@ -153,8 +158,8 @@ public interface Assertions {
      * @param more More possible codes
      * @return this
      */
-    default Assertions assertResponseCodeIn(int first, int... more) {
-        return assertResponseCode(IntPredicates.anyOf(first, more));
+    default Assertions assertStatusIn(int first, int... more) {
+        return assertStatus(IntPredicates.anyOf(first, more));
     }
 
     /**
@@ -163,7 +168,7 @@ public interface Assertions {
      * @return this
      */
     default Assertions assertOk() {
-        return assertResponseCode(200);
+        return assertStatus(200);
     }
 
     /**
@@ -172,7 +177,7 @@ public interface Assertions {
      * @return this
      */
     default Assertions assertCreated() {
-        return assertResponseCode(201);
+        return assertStatus(201);
     }
 
     /**
@@ -181,7 +186,7 @@ public interface Assertions {
      * @return this
      */
     default Assertions assertNotFound() {
-        return assertResponseCode(404);
+        return assertStatus(404);
     }
 
     /**
@@ -190,7 +195,7 @@ public interface Assertions {
      * @return this
      */
     default Assertions assertNotModified() {
-        return assertResponseCode(304);
+        return assertStatus(304);
     }
 
     /**
@@ -199,7 +204,7 @@ public interface Assertions {
      * @return this
      */
     default Assertions assertNoContent() {
-        return assertResponseCode(204);
+        return assertStatus(204);
     }
 
     /**
@@ -208,7 +213,7 @@ public interface Assertions {
      * @return this
      */
     default Assertions assertUnauthorized() {
-        return assertResponseCode(401);
+        return assertStatus(401);
     }
 
     /**
@@ -217,7 +222,7 @@ public interface Assertions {
      * @return this
      */
     default Assertions assertForbidden() {
-        return assertResponseCode(403);
+        return assertStatus(403);
     }
 
     /**
@@ -226,7 +231,7 @@ public interface Assertions {
      * @return this
      */
     default Assertions assertConflict() {
-        return assertResponseCode(409);
+        return assertStatus(409);
     }
 
     /**
@@ -235,7 +240,7 @@ public interface Assertions {
      * @return this
      */
     default Assertions assertGone() {
-        return assertResponseCode(410);
+        return assertStatus(410);
     }
 
     /**
@@ -244,7 +249,7 @@ public interface Assertions {
      * @return this
      */
     default Assertions assertBadRequest() {
-        return assertResponseCode(400);
+        return assertStatus(400);
     }
 
     /**
@@ -259,7 +264,7 @@ public interface Assertions {
      * status) returned by the HTTP request.
      * @return this
      */
-    Assertions assertResponseCode(IntPredicate responseCodeTest);
+    Assertions assertStatus(IntPredicate responseCodeTest);
 
     /**
      * Assert that there <i>is</i> a response body with a length > 0.

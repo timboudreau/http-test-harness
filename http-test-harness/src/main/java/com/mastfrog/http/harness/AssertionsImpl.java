@@ -210,7 +210,7 @@ final class AssertionsImpl implements Assertions, HttpResponse.BodyHandler<Strin
     }
 
     @Override
-    public AssertionsImpl assertResponseCode(IntPredicate responseCode) {
+    public AssertionsImpl assertStatus(IntPredicate responseCode) {
         return addHeaderAssertion(new ResponseCodeAssertion("Response code", severity(), adapt(responseCode)));
     }
 

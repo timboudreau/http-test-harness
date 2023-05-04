@@ -84,9 +84,12 @@ public interface TestResults<T> extends Iterable<AssertionResult> {
 
     /**
      * Throws an assertion error if any of the assertions applied to the request
-     * have failed.
+     * have failed.  This method will not throw in the case of timeouts or failure
+     * to run for some other reason - it just asserts that there were no <i>failures</i>
+     * among the assertions.
      *
      * @return this
+     * @see TestResults#assertAllSucceeded()
      */
     default TestResults<T> assertNoFailures() {
         return assertNoMatches((status, severity) -> {

@@ -46,16 +46,16 @@ public class JsonTests {
     public void testJsonInput() {
         SomeObject obj = new SomeObject(23, "skiddoo");
         harn.postObject("jsonInput", obj)
-                .applyingAssertions(asserts -> {
-                    asserts.assertResponseCodeGreaterThan(199)
-                            .assertResponseCodeLessThan(400)
+                .asserting(asserts -> {
+                    asserts.assertStatusGreaterThan(199)
+                            .assertStatusLessThan(400)
                             .assertVersion(HTTP_1_1)
                             .assertDeserializedBodyEquals(
                                     new SomeObject(24, "skiddoo-xx"))
                             .assertDeserializedBodyEquals(
                                     new SomeObject(57, "woogle"))
                             .withSeverity(FailureSeverity.WARNING, as -> {
-                                as.assertResponseCode(367);
+                                as.assertStatus(367);
                                 as.assertBody(Predicates.namedPredicate("Throw Something", b -> {
                                     throw new IllegalStateException("Woops");
                                 }));
